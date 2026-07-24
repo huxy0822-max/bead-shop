@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>豆豆拼豆小铺 · 经营看板</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="80">🧶</text></svg>'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pink:#FF7BA9; --pink-deep:#F45B8F; --pink-soft:#FFD9E4;
+  --orange:#FFB35C; --orange-soft:#FFE4C2;
+  --yellow:#FFD166;
+  --mint:#3ECF9A; --mint-soft:#CFF5E5; --green:#1FA87A;
+  --blue:#6FC7EA;
+  --purple:#B9A7F9; --purple-soft:#E7DFFF;
+  --red:#F4746B;
+  --ink:#4A3B36; --ink-soft:#9A8378; --ink-faint:#C0AEA2;
+  --bg:#FFF7EE; --card:#FFFFFF; --line:#F3E2D2;
+}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--ink); min-height:100vh;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:radial-gradient(#F1DEC8 1.6px, transparent 1.7px);
+  background-size:26px 26px; opacity:.6;
+}
+/* 散落的装饰拼豆（俯视是圆环） */
+.deco i{
+  position:fixed; z-index:0; pointer-events:none; border-radius:50%;
+  background:radial-gradient(circle, var(--bg) 0 26%, var(--c) 30% 100%);
+  opacity:.30; box-shadow:inset -4px -6px 0 rgba(0,0,0,.05);
+}
+.deco i::after{
+  content:""; position:absolute; top:16%; left:20%; width:22%; height:22%;
+  border-radius:50%; background:rgba(255,255,255,.75);
+}
+.wrap{max-width:1160px; margin:0 auto; padding:30px 22px 70px; position:relative; z-index:1}
+
+@keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+
+/* ---------- 头部 ---------- */
+header{
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+  flex-wrap:wrap; margin-bottom:20px; animation:rise .5s ease both;
+}
+.brand{display:flex; align-items:center; gap:16px}
+.logo{width:58px; height:58px; position:relative; flex:none;
+  background:#fff; border-radius:18px; box-shadow:0 8px 18px rgba(190,140,90,.18);
+}
+.heart{width:8px; height:8px; position:absolute; top:5px; left:5px;
+  box-shadow:
+   8px 0 0 #F45B8F, 16px 0 0 #F45B8F, 32px 0 0 #F45B8F, 40px 0 0 #F45B8F,
+   0 8px 0 #F45B8F, 8px 8px 0 #FFC2D6, 16px 8px 0 #F45B8F, 24px 8px 0 #F45B8F, 32px 8px 0 #F45B8F, 40px 8px 0 #F45B8F, 48px 8px 0 #F45B8F,
+   0 16px 0 #F45B8F, 8px 16px 0 #F45B8F, 16px 16px 0 #F45B8F, 24px 16px 0 #F45B8F, 32px 16px 0 #F45B8F, 40px 16px 0 #F45B8F, 48px 16px 0 #F45B8F,
+   8px 24px 0 #F45B8F, 16px 24px 0 #F45B8F, 24px 24px 0 #F45B8F, 32px 24px 0 #F45B8F, 40px 24px 0 #F45B8F,
+   16px 32px 0 #F45B8F, 24px 32px 0 #F45B8F, 32px 32px 0 #F45B8F,
+   24px 40px 0 #F45B8F;
+}
+.brand h1{
+  font-size:28px; letter-spacing:2px;
+  background:linear-gradient(90deg,#F45B8F,#FF9A5C);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.tagline{color:var(--ink-soft); font-size:13px; margin-top:5px; letter-spacing:1.5px}
+.header-actions{display:flex; gap:10px; flex-wrap:wrap}
+
+.btn{
+  border:none; cursor:pointer; font-family:inherit;
+  padding:10px 18px; border-radius:999px; font-size:14px; font-weight:700;
+  letter-spacing:1px; transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:linear-gradient(135deg,var(--pink),var(--orange)); color:#fff; box-shadow:0 6px 14px rgba(244,91,143,.35)}
+.btn.ghost{background:#fff; color:var(--ink); border:2px solid var(--line)}
+.btn.wide{width:100%; margin-top:10px}
+
+/* ---------- 月份栏 ---------- */
+.monthbar{
+  background:var(--card); border-radius:24px; padding:18px 24px; margin-bottom:16px;
+  box-shadow:0 10px 24px rgba(190,140,90,.12);
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  animation:rise .5s ease both;
+}
+.monthbar .arrow{
+  width:38px; height:38px; border-radius:50%; border:2px solid var(--line);
+  background:#FFFCF8; color:var(--ink); font-size:17px; cursor:pointer; flex:none;
+  transition:all .15s ease;
+}
+.monthbar .arrow:hover:not(:disabled){border-color:var(--pink); color:var(--pink-deep); transform:scale(1.06)}
+.monthbar .arrow:disabled{opacity:.35; cursor:default}
+.month-title{font-size:23px; letter-spacing:1.5px; display:flex; align-items:center; gap:10px}
+.badge{
+  font-size:11px; font-weight:700; letter-spacing:1px; color:var(--pink-deep);
+  background:var(--pink-soft); border-radius:999px; padding:3px 10px;
+}
+.badge.past{color:#8A6D5C; background:#F6E4D0}
+.month-sub{color:var(--ink-soft); font-size:13px; letter-spacing:.5px}
+.monthbar .right{margin-left:auto; display:flex; gap:10px; align-items:center}
+.linkbtn{
+  border:none; background:none; cursor:pointer; font-family:inherit;
+  color:var(--pink-deep); font-size:13px; font-weight:700; letter-spacing:1px;
+  border-bottom:2px dashed var(--pink-soft); padding:2px 1px;
+}
+.linkbtn:hover{color:var(--orange)}
+
+/* ---------- 统计卡片 ---------- */
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:16px}
+.stat{
+  background:var(--card); border-radius:22px; padding:20px 22px; position:relative; overflow:hidden;
+  box-shadow:0 10px 24px rgba(190,140,90,.12); animation:rise .5s ease both;
+}
+.stat:nth-child(2){animation-delay:.06s}
+.stat:nth-child(3){animation-delay:.12s}
+.stat:nth-child(4){animation-delay:.18s}
+.stat::after{
+  content:""; position:absolute; top:-20px; right:-20px; width:70px; height:70px; border-radius:50%;
+  background:radial-gradient(circle, transparent 0 34%, var(--c) 38% 60%, transparent 64%); opacity:.5;
+}
+.stat .label{font-size:13px; color:var(--ink-soft); letter-spacing:1.5px}
+.stat strong{display:block; font-size:26px; margin:9px 0 5px; font-variant-numeric:tabular-nums}
+.stat .sub{font-size:12px; color:var(--ink-soft)}
+.pos{color:var(--green)} .neg{color:var(--red)}
+
+/* ---------- 卡片与布局 ---------- */
+.grid{display:grid; grid-template-columns:390px 1fr; gap:16px; margin-bottom:16px}
+.grid2{display:grid; grid-template-columns:420px 1fr; gap:16px}
+.card{
+  background:var(--card); border-radius:24px; padding:24px;
+  box-shadow:0 10px 24px rgba(190,140,90,.12); animation:rise .5s ease both;
+}
+.card h2{font-size:17px; letter-spacing:1.5px; display:flex; align-items:center; gap:9px; margin-bottom:18px}
+.dot{width:13px; height:13px; border-radius:50%; background:var(--c);
+  box-shadow:inset -2px -3px 0 rgba(0,0,0,.10), inset 2px 2px 0 rgba(255,255,255,.55)}
+.card .more{margin-left:auto; font-size:12px; color:var(--ink-soft); font-weight:400}
+
+/* ---------- 表单 ---------- */
+.field{display:block; margin-bottom:13px}
+.field span{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:6px; letter-spacing:1px}
+.field input{
+  width:100%; padding:12px 14px; border-radius:14px; border:2px solid var(--line);
+  background:#FFFCF8; font-family:inherit; font-size:15px; color:var(--ink); outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.field input:focus{border-color:var(--pink); box-shadow:0 0 0 4px var(--pink-soft)}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+input[type=number]{-moz-appearance:textfield}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.preview{
+  background:#FFF3E4; border:2px dashed #F5D9B8; border-radius:14px;
+  padding:11px 14px; font-size:13px; color:var(--ink-soft); margin:4px 0 14px;
+}
+.preview b{font-size:15px; font-variant-numeric:tabular-nums}
+.btn.save{
+  width:100%; padding:14px; font-size:16px; color:#fff;
+  background:linear-gradient(135deg,var(--pink-deep),var(--orange));
+  box-shadow:0 8px 18px rgba(244,91,143,.35);
+}
+
+/* ---------- 折线图 ---------- */
+.legend{display:flex; gap:16px; font-size:12px; color:var(--ink-soft); margin-bottom:10px; flex-wrap:wrap}
+.legend i{display:inline-block; width:14px; height:0; border-top:3px solid; border-radius:2px; margin-right:6px; vertical-align:3px}
+.legend i.dash{border-top-style:dashed}
+.chart-wrap{position:relative}
+.linechart{width:100%; height:auto; display:block}
+.linechart text{font-family:inherit; fill:var(--ink-faint); font-size:11px}
+.chart-empty{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-soft); font-size:14px; letter-spacing:1px;
+}
+
+/* ---------- 成本结构 ---------- */
+.cost-total{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
+.cost-total span{font-size:13px; color:var(--ink-soft); letter-spacing:1px}
+.cost-total b{font-size:24px; font-variant-numeric:tabular-nums}
+.cost-item{display:grid; grid-template-columns:96px 1fr 96px; gap:12px; align-items:center; padding:7px 0}
+.cost-item .nm{font-size:13.5px; display:flex; align-items:center; gap:7px}
+.cost-item .sw{width:10px; height:10px; border-radius:3px; flex:none; background:var(--c); box-shadow:inset -1px -2px 0 rgba(0,0,0,.08)}
+.cost-item .track{height:13px; background:#FBEFE2; border-radius:999px; overflow:hidden}
+.cost-item .fill{height:100%; border-radius:999px; background:var(--c); min-width:0; transition:width .4s ease}
+.cost-item .val{text-align:right; font-size:13.5px; font-variant-numeric:tabular-nums; color:var(--ink)}
+.payback{margin-top:16px; background:#FFF7EE; border:2px dashed #F5D9B8; border-radius:16px; padding:14px 16px}
+.payback .pb-head{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--ink-soft); letter-spacing:1px}
+.payback .pb-head b{font-size:17px; color:var(--pink-deep); font-variant-numeric:tabular-nums}
+.payback .ptrack{height:11px; background:#F6E4D0; border-radius:999px; overflow:hidden; margin:9px 0 7px}
+.payback .pfill{height:100%; border-radius:999px; background:linear-gradient(90deg,#FFB35C,#F45B8F); transition:width .5s ease}
+.payback .pb-sub{font-size:12px; color:var(--ink-soft); line-height:1.7}
+
+/* ---------- 流水明细 ---------- */
+#records{max-height:460px; overflow-y:auto; padding-right:4px}
+.rec-head,.rec-row{
+  display:grid; grid-template-columns:1.05fr .85fr .5fr .85fr .85fr .85fr 1.1fr 80px;
+  gap:8px; align-items:center; font-size:13.5px;
+}
+.rec-head{
+  color:var(--ink-soft); font-size:12px; letter-spacing:1px; padding:4px 12px 10px;
+  border-bottom:2px solid #F8ECDD; position:sticky; top:-24px; background:#fff; z-index:2;
+}
+.rec-row{padding:11px 12px; border-radius:14px; transition:background .12s ease}
+.rec-row:hover{background:#FFF7EE}
+.rec-row .d{color:var(--ink-soft); font-size:12.5px; white-space:nowrap}
+.rec-row span{font-variant-numeric:tabular-nums}
+.rec-row .p{font-weight:700}
+.rec-row .note{
+  color:var(--ink-soft); font-size:12.5px; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; display:block;
+}
+.ops{display:flex; gap:6px}
+.op{border:none; background:#FFF1E0; color:#C77B3F; font-size:12px; padding:5px 10px; border-radius:999px; cursor:pointer; font-family:inherit}
+.op:hover{background:#FFE4C2}
+.op.del{background:#FFE9EC; color:#E0567A}
+.op.del:hover{background:#FFD6DE}
+.empty{text-align:center; padding:44px 0; color:var(--ink-soft); font-size:15px; letter-spacing:1px; line-height:2}
+
+/* ---------- 弹窗 ---------- */
+.modal-mask{
+  position:fixed; inset:0; z-index:50; background:rgba(74,59,54,.38);
+  backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px;
+}
+[hidden]{display:none !important}
+.modal{background:#fff; border-radius:26px; padding:28px; width:min(440px,94vw); box-shadow:0 24px 60px rgba(74,59,54,.25); animation:rise .3s ease both}
+.modal h2{font-size:19px; letter-spacing:1.5px; margin-bottom:18px; display:flex; align-items:center; gap:9px}
+.hint{font-size:12.5px; color:var(--ink-soft); line-height:1.8; background:#FFF7EE; border-radius:12px; padding:10px 14px; margin-bottom:14px}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed; left:50%; bottom:36px; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:#FFF7EE; padding:11px 22px; border-radius:999px;
+  font-size:14px; letter-spacing:1px; opacity:0; pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease; z-index:99;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacing:1px; margin-top:34px; line-height:2}
+
+@media (max-width:1020px){
+  .stats{grid-template-columns:1fr 1fr}
+  .grid,.grid2{grid-template-columns:1fr}
+  .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr .9fr 1.1fr 76px}
+  .rec-head span:nth-child(4),.rec-row span:nth-child(4),
+  .rec-head span:nth-child(5),.rec-row span:nth-child(5){display:none}
+}
+@media (max-width:560px){
+  .brand h1{font-size:22px}
+  .month-title{font-size:19px}
+  .stats{grid-template-columns:1fr 1fr; gap:10px}
+  .stat strong{font-size:20px}
+  .rec-head,.rec-row{grid-template-columns:1.2fr 1fr 1fr 72px; font-size:12.5px}
+  .rec-head span:nth-child(3),.rec-row span:nth-child(3),
+  .rec-head span:nth-child(6),.rec-row span:nth-child(6){display:none}
+}
+</style>
+</head>
+<body>
+<div class="deco" aria-hidden="true">
+  <i style="--c:#FF7BA9; top:9%;  left:2.5%;  width:56px; height:56px"></i>
+  <i style="--c:#FFD166; top:22%; right:3%;   width:40px; height:40px"></i>
+  <i style="--c:#6FC7EA; top:58%; left:1.5%;  width:34px; height:34px"></i>
+  <i style="--c:#3ECF9A; top:76%; right:2%;   width:60px; height:60px"></i>
+  <i style="--c:#B9A7F9; top:42%; right:6%;   width:26px; height:26px"></i>
+  <i style="--c:#FFB35C; top:88%; left:6%;    width:44px; height:44px"></i>
+  <i style="--c:#FF7BA9; top:6%;  right:14%;  width:22px; height:22px"></i>
+  <i style="--c:#3ECF9A; top:34%; left:5%;    width:20px; height:20px"></i>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo"><div class="heart"></div></div>
+      <div>
+        <h1 id="shopName">豆豆拼豆小铺</h1>
+        <p class="tagline">一颗一颗，拼出好日子 · 经营看板</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn ghost" id="exportBtn">导出数据</button>
+      <button class="btn ghost" id="importBtn">导入数据</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+      <button class="btn primary" id="settingsBtn">小店设置</button>
+    </div>
+  </header>
+
+  <section class="monthbar">
+    <button class="arrow" id="prevMonth" title="上一个月">‹</button>
+    <div>
+      <div class="month-title"><span id="monthLabel">2026 年 7 月</span><span class="badge" id="monthBadge">本月</span></div>
+      <div class="month-sub" id="monthSub">已收录 0 个营业日的经营数据</div>
+    </div>
+    <button class="arrow" id="nextMonth" title="下一个月">›</button>
+    <div class="right">
+      <button class="linkbtn" id="backToday" hidden>回到本月</button>
+      <button class="btn primary" id="quickAdd">记一笔今天的账</button>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat" style="--c:#FF7BA9">
+      <span class="label">本月营业额</span>
+      <strong id="stRevenue">¥0.00</strong>
+      <span class="sub" id="stDays">0 个营业日</span>
+    </div>
+    <div class="stat" style="--c:#3ECF9A">
+      <span class="label">本月净利润</span>
+      <strong id="stProfit">¥0.00</strong>
+      <span class="sub" id="stProfitSub">已含装修摊销 ¥0.00</span>
+    </div>
+    <div class="stat" style="--c:#B9A7F9">
+      <span class="label">净利率</span>
+      <strong id="stMargin">—</strong>
+      <span class="sub" id="stMarginSub">经营利润 ¥0.00</span>
+    </div>
+    <div class="stat" style="--c:#FFB35C">
+      <span class="label">平均客单价</span>
+      <strong id="stAvg">—</strong>
+      <span class="sub" id="stAvgSub">共 0 笔订单</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card" id="formCard">
+      <h2><span class="dot" style="--c:#FF7BA9"></span>每日记账<span class="more">保存时自动扣除当天固定分摊</span></h2>
+      <form id="entryForm" autocomplete="off">
+        <div class="two">
+          <label class="field"><span>日期</span>
+            <input type="date" id="fDate" required>
+          </label>
+          <label class="field"><span>订单数（笔）</span>
+            <input type="number" id="fOrders" min="0" step="1" inputmode="numeric" placeholder="如 25">
+          </label>
+        </div>
+        <label class="field"><span>营业额（元）</span>
+          <input type="number" id="fRevenue" min="0" step="0.01" inputmode="decimal" placeholder="今天收入了多少？" required>
+        </label>
+        <label class="field"><span>拼豆 / 材料成本（元）</span>
+          <input type="number" id="fMaterial" min="0" step="0.01" inputmode="decimal" placeholder="拼豆、配件、包装等消耗">
+        </label>
+        <div class="two">
+          <label class="field"><span>营销推广（元）</span>
+            <input type="number" id="fMarketing" min="0" step="0.01" inputmode="decimal" placeholder="推广、团购">
+          </label>
+          <label class="field"><span>杂项开支（元）</span>
+            <input type="number" id="fMisc" min="0" step="0.01" inputmode="decimal" placeholder="其他零碎支出">
+          </label>
+        </div>
+        <label class="field"><span>今日备注（选填）</span>
+          <input type="text" id="fNote" maxlength="30" placeholder="如：周末亲子体验活动，客流不错">
+        </label>
+        <div class="preview">
+          本日固定分摊 <b id="pvFixed">¥0.00</b>（房租水电 + 装修摊销），预计净利润 <b id="pvProfit" class="pos">+¥0.00</b>
+        </div>
+        <button type="submit" class="btn save" id="saveBtn">保存今日经营 →</button>
+        <button type="button" class="btn ghost wide" id="cancelEdit" hidden>取消编辑</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="--c:#3ECF9A"></span>收入与利润<span class="more">悬停查看每日明细</span></h2>
+      <div class="legend">
+        <span><i style="border-color:#F45B8F"></i>营业额</span>
+        <span><i class="dash" style="border-color:#8A6D5C"></i>净利润（虚线）</span>
+      </div>
+      <div class="chart-wrap">
+        <svg class="linechart" id="linechart" viewBox="0 0 660 240" role="img" aria-label="收入与利润趋势图"></svg>
+        <div class="chart-empty" id="chartEmpty" hidden>这个月还没有记录，先记一笔吧～</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section class="card">
+      <h2><span class="dot" style="--c:#FFB35C"></span>成本结构</h2>
+      <div class="cost-total"><span>本月总支出</span><b id="costTotal">¥0.00</b></div>
+      <div id="costList"></div>
+      <div class="payback" id="payback">
+        <div class="pb-head"><span>装修回本进度</span><b id="pbPct">0%</b></div>
+        <div class="ptrack"><div class="pfill" id="pbFill" style="width:0%"></div></div>
+        <div class="pb-sub" id="pbSub">累计经营利润 ¥0.00</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot" style="--c:#B9A7F9"></span>每日流水<span class="more" id="recMore">本月已记录 0 天</span></h2>
+      <div id="records"></div>
+    </section>
+  </div>
+
+  <footer>
+    用 ❤ 和拼豆一颗一颗拼出来的看板<br>
+    数据只保存在这台电脑的浏览器里，记得定期「导出数据」备份哦
+  </footer>
+</div>
+
+<div class="modal-mask" id="settingsModal" hidden>
+  <div class="modal">
+    <h2><span class="dot" style="--c:#FF7BA9"></span>小店设置</h2>
+    <p class="hint" id="settingsWelcome" hidden>欢迎开张 🎉 先填一下小店的基本成本，之后每天记账就会自动算好净利润啦～</p>
+    <form id="settingsForm" autocomplete="off">
+      <label class="field"><span>店铺名称</span>
+        <input type="text" id="sName" maxlength="12" placeholder="豆豆拼豆小铺">
+      </label>
+      <div class="two">
+        <label class="field"><span>月房租（元）</span>
+          <input type="number" id="sRent" min="0" step="0.01" inputmode="decimal" placeholder="如 6000">
+        </label>
+        <label class="field"><span>月水电（元）</span>
+          <input type="number" id="sUtil" min="0" step="0.01" inputmode="decimal" placeholder="如 800">
+        </label>
+      </div>
+      <div class="two">
+        <label class="field"><span>装修总成本（元）</span>
+          <input type="number" id="sDeco" min="0" step="0.01" inputmode="decimal" placeholder="一次性投入">
+        </label>
+        <label class="field"><span>装修摊销（月）</span>
+          <input type="number" id="sMonths" min="1" step="1" inputmode="numeric" placeholder="如 36">
+        </label>
+      </div>
+      <p class="hint">计算方式：房租水电按「月 ÷ 30 天」摊到每个记账日；装修成本按「总成本 ÷ 摊销月数 ÷ 30 天」摊销。<br>经营利润 = 营业额 − 变动成本 − 房租水电分摊；净利润 = 经营利润 − 装修摊销。</p>
+      <button type="submit" class="btn save">保存设置</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+"use strict";
+var LS_SET = 'beadshop_settings_v1', LS_REC = 'beadshop_records_v1';
+
+function $(id){ return document.getElementById(id); }
+function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function int(v){ var n = parseInt(v, 10); return isNaN(n) || n < 0 ? 0 : n; }
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function money(n){
+  n = Number(n) || 0;
+  var abs = Math.abs(n).toLocaleString('zh-CN',{minimumFractionDigits:2, maximumFractionDigits:2});
+  return (n < 0 ? '-¥' : '¥') + abs;
+}
+function shortMoney(v){ return v >= 10000 ? (v/10000).toFixed(1) + '万' : String(Math.round(v)); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dateStr(d){ return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+function todayStr(){ return dateStr(new Date()); }
+function fmtDate(s){
+  var dt = new Date(s + 'T00:00:00');
+  if(isNaN(dt)) return s;
+  return (dt.getMonth()+1) + '月' + dt.getDate() + '日·周' + '日一二三四五六'.charAt(dt.getDay());
+}
+function monthLabel(mk){ return mk.slice(0,4) + ' 年 ' + parseInt(mk.slice(5,7), 10) + ' 月'; }
+function shiftMonth(mk, delta){
+  var y = +mk.slice(0,4), m = +mk.slice(5,7) + delta;
+  while(m < 1){ m += 12; y--; }
+  while(m > 12){ m -= 12; y++; }
+  return y + '-' + pad2(m);
+}
+
+var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, decoration:0, decoMonths:36 };
+var records  = load(LS_REC)  || {};
+var editing  = null;
+var viewMonth = todayStr().slice(0,7);
+
+function save(){
+  localStorage.setItem(LS_SET, JSON.stringify(settings));
+  localStorage.setItem(LS_REC, JSON.stringify(records));
+}
+function dailyFixed(){ return (num(settings.rent) + num(settings.utilities)) / 30; }
+function dailyDeco(){ return num(settings.decoMonths) > 0 ? num(settings.decoration) / num(settings.decoMonths) / 30 : 0; }
+function amort(){ return dailyFixed() + dailyDeco(); }
+function varCost(r){ return num(r.material) + num(r.marketing) + num(r.misc); }
+function opProfit(r){ return num(r.revenue) - varCost(r) - dailyFixed(); }   /* 经营利润 */
+function recordProfit(r){ return opProfit(r) - dailyDeco(); }               /* 净利润 */
+
+/* ---------- 汇总 ---------- */
+function aggregate(mk){
+  var a = { rev:0, mat:0, mar:0, mis:0, orders:0, days:0, opProfit:0, profit:0, cumOpProfit:0 };
+  for(var d in records){
+    var r = records[d], op = opProfit(r);
+    a.cumOpProfit += op;
+    if(d.slice(0,7) === mk){
+      a.rev    += num(r.revenue);
+      a.mat    += num(r.material);
+      a.mar    += num(r.marketing);
+      a.mis    += num(r.misc);
+      a.orders += int(r.orders);
+      a.opProfit += op;
+      a.profit   += recordProfit(r);
+      a.days++;
+    }
+  }
+  a.fixedAmort = dailyFixed() * a.days;
+  a.decoAmort  = dailyDeco()  * a.days;
+  return a;
+}
+
+/* ---------- 月份栏 ---------- */
+function renderMonthBar(a){
+  var cur = todayStr().slice(0,7);
+  $('monthLabel').textContent = monthLabel(viewMonth);
+  var isCur = viewMonth === cur;
+  $('monthBadge').textContent = isCur ? '本月' : '历史';
+  $('monthBadge').className = 'badge' + (isCur ? '' : ' past');
+  $('monthSub').textContent = '已收录 ' + a.days + ' 个营业日的经营数据';
+  $('backToday').hidden = isCur;
+  $('nextMonth').disabled = viewMonth >= cur;
+}
+$('prevMonth').addEventListener('click', function(){ viewMonth = shiftMonth(viewMonth, -1); renderAll(); });
+$('nextMonth').addEventListener('click', function(){
+  if(viewMonth < todayStr().slice(0,7)){ viewMonth = shiftMonth(viewMonth, 1); renderAll(); }
+});
+$('backToday').addEventListener('click', function(){ viewMonth = todayStr().slice(0,7); renderAll(); });
+$('quickAdd').addEventListener('click', function(){
+  $('formCard').scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(function(){ $('fRevenue').focus(); }, 400);
+});
+
+/* ---------- 统计卡片 ---------- */
+function renderStats(a){
+  $('stRevenue').textContent = money(a.rev);
+  $('stDays').textContent = a.days + ' 个营业日 · 日均 ' + money(a.days ? a.rev/a.days : 0);
+  var sp = $('stProfit');
+  sp.textContent = money(a.profit);
+  sp.className = a.profit >= 0 ? 'pos' : 'neg';
+  $('stProfitSub').textContent = '已含装修摊销 ' + money(a.decoAmort);
+  var sm = $('stMargin');
+  if(a.rev > 0){
+    var m = a.profit / a.rev * 100;
+    sm.textContent = m.toFixed(1) + '%';
+    sm.className = m >= 0 ? 'pos' : 'neg';
+  }else{
+    sm.textContent = '—'; sm.className = '';
+  }
+  $('stMarginSub').textContent = '经营利润 ' + money(a.opProfit);
+  $('stAvg').textContent = a.orders > 0 ? money(a.rev / a.orders) : '—';
+  $('stAvgSub').textContent = '共 ' + a.orders + ' 笔订单';
+}
+
+/* ---------- 收入与利润折线图 ---------- */
+function renderChart(){
+  var svg = $('linechart');
+  var dates = Object.keys(records).filter(function(d){ return d.slice(0,7) === viewMonth; }).sort();
+  $('chartEmpty').hidden = dates.length > 0;
+  if(!dates.length){ svg.innerHTML = ''; return; }
+
+  var W = 660, H = 240, pl = 46, pr = 18, pt = 16, pb = 30;
+  var base = H - pb;
+  var maxV = 1, i, r;
+  for(i = 0; i < dates.length; i++){
+    r = records[dates[i]];
+    maxV = Math.max(maxV, num(r.revenue), Math.abs(recordProfit(r)));
+  }
+  maxV *= 1.15;
+  var n = dates.length;
+  function x(i){ return n === 1 ? pl + (W - pl - pr) / 2 : pl + i * (W - pl - pr) / (n - 1); }
+  function y(v){ return pt + (1 - v / maxV) * (base - pt); }
+
+  var s = '';
+  /* 网格与 Y 轴刻度 */
+  var ticks = [0, maxV/2, maxV];
+  for(i = 0; i < ticks.length; i++){
+    var gy = y(ticks[i]);
+    s += '<line x1="' + pl + '" y1="' + gy + '" x2="' + (W-pr) + '" y2="' + gy + '" stroke="#F6E9DA" stroke-width="1"' + (i === 0 ? ' stroke-dasharray="1"' : ' stroke-dasharray="4 5"') + '/>'
+       + '<text x="' + (pl-8) + '" y="' + (gy+4) + '" text-anchor="end">¥' + shortMoney(ticks[i]) + '</text>';
+  }
+
+  var revPts = [], proPts = [];
+  for(i = 0; i < dates.length; i++){
+    r = records[dates[i]];
+    revPts.push([x(i), y(num(r.revenue))]);
+    proPts.push([x(i), y(recordProfit(r))]);
+  }
+  function ptsStr(pts){ return pts.map(function(p){ return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '); }
+
+  /* 营业额渐变面积 */
+  var area = 'M ' + revPts[0][0].toFixed(1) + ',' + base;
+  for(i = 0; i < n; i++) area += ' L ' + revPts[i][0].toFixed(1) + ',' + revPts[i][1].toFixed(1);
+  area += ' L ' + revPts[n-1][0].toFixed(1) + ',' + base + ' Z';
+  s += '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">'
+     + '<stop offset="0" stop-color="#F45B8F" stop-opacity=".22"/>'
+     + '<stop offset="1" stop-color="#F45B8F" stop-opacity=".02"/></linearGradient></defs>'
+     + '<path d="' + area + '" fill="url(#ag)"/>';
+
+  /* 折线 */
+  s += '<polyline points="' + ptsStr(revPts) + '" fill="none" stroke="#F45B8F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+     + '<polyline points="' + ptsStr(proPts) + '" fill="none" stroke="#8A6D5C" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round"/>';
+
+  /* 数据点 + 悬停提示 + X 轴标签 */
+  for(i = 0; i < n; i++){
+    var d = dates[i]; r = records[d];
+    var p = recordProfit(r);
+    var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n净利润 ' + (p >= 0 ? '+' : '') + money(p) + (r.note ? '\n备注：' + r.note : '');
+    s += '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="4.2" fill="#F45B8F" stroke="#fff" stroke-width="2"/>'
+       + '<circle cx="' + proPts[i][0] + '" cy="' + proPts[i][1] + '" r="3.6" fill="#8A6D5C" stroke="#fff" stroke-width="2"/>'
+       + '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="12" fill="transparent"><title>' + esc(tip) + '</title></circle>'
+       + '<text x="' + x(i) + '" y="' + (H-8) + '" text-anchor="middle">' + parseInt(d.slice(8,10), 10) + '日</text>';
+  }
+  svg.innerHTML = s;
+}
+
+/* ---------- 成本结构 + 装修回本 ---------- */
+function renderCosts(a){
+  var items = [
+    { name:'拼豆 / 材料', value:a.mat,        color:'#6FC7EA' },
+    { name:'营销推广',    value:a.mar,        color:'#FFB35C' },
+    { name:'杂项开支',    value:a.mis,        color:'#B9A7F9' },
+    { name:'房租与水电',  value:a.fixedAmort, color:'#FF7BA9' },
+    { name:'装修摊销',    value:a.decoAmort,  color:'#FFD166' }
+  ];
+  var total = 0, max = 1, i;
+  for(i = 0; i < items.length; i++){ total += items[i].value; max = Math.max(max, items[i].value); }
+  $('costTotal').textContent = money(total);
+  var html = '';
+  for(i = 0; i < items.length; i++){
+    var w = Math.max(items[i].value / max * 100, items[i].value > 0 ? 2 : 0);
+    html += '<div class="cost-item" style="--c:' + items[i].color + '">'
+          + '<span class="nm"><span class="sw"></span>' + items[i].name + '</span>'
+          + '<span class="track"><span class="fill" style="display:block;width:' + w.toFixed(1) + '%"></span></span>'
+          + '<span class="val">' + money(items[i].value) + '</span></div>';
+  }
+  $('costList').innerHTML = html;
+
+  var decoTotal = num(settings.decoration);
+  if(decoTotal > 0){
+    $('payback').hidden = false;
+    var pct = Math.min(Math.max(a.cumOpProfit / decoTotal * 100, 0), 100);
+    var remain = Math.max(decoTotal - a.cumOpProfit, 0);
+    $('pbPct').textContent = pct.toFixed(1) + '%';
+    $('pbFill').style.width = pct.toFixed(1) + '%';
+    $('pbSub').textContent = remain > 0
+      ? '累计经营利润 ' + money(a.cumOpProfit) + '，距离覆盖装修投入还差 ' + money(remain)
+      : '🎉 装修投入已全部回本！累计经营利润 ' + money(a.cumOpProfit);
+  }else{
+    $('payback').hidden = true;
+  }
+}
+
+/* ---------- 每日流水 ---------- */
+function renderRecords(){
+  var box = $('records');
+  var dates = Object.keys(records).filter(function(d){ return d.slice(0,7) === viewMonth; }).sort().reverse();
+  $('recMore').textContent = '本月已记录 ' + dates.length + ' 天';
+  if(!dates.length){
+    box.innerHTML = '<div class="empty">🫘 这个月还没有记录<br><small>从左边「每日记账」开始吧～</small></div>';
+    return;
+  }
+  var html = '<div class="rec-head"><span>日期</span><span>营业额</span><span>订单</span><span>变动成本</span><span>固定分摊</span><span>净利润</span><span>备注</span><span>操作</span></div>';
+  for(var i = 0; i < dates.length; i++){
+    var d = dates[i], r = records[d];
+    var p = recordProfit(r);
+    html += '<div class="rec-row">'
+      + '<span class="d">' + fmtDate(d) + '</span>'
+      + '<span>' + money(r.revenue) + '</span>'
+      + '<span>' + int(r.orders) + '</span>'
+      + '<span>' + money(varCost(r)) + '</span>'
+      + '<span>' + money(amort()) + '</span>'
+      + '<span class="p ' + (p >= 0 ? 'pos' : 'neg') + '">' + (p >= 0 ? '+' : '') + money(p) + '</span>'
+      + '<span class="note" title="' + esc(r.note || '') + '">' + (r.note ? esc(r.note) : '—') + '</span>'
+      + '<span class="ops"><button class="op" data-act="edit" data-date="' + d + '">编辑</button>'
+      + '<button class="op del" data-act="del" data-date="' + d + '">删除</button></span>'
+      + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function renderAll(){
+  var a = aggregate(viewMonth);
+  renderMonthBar(a);
+  renderStats(a);
+  renderChart();
+  renderCosts(a);
+  renderRecords();
+}
+
+/* ---------- 表单 ---------- */
+function updatePreview(){
+  var p = num($('fRevenue').value) - num($('fMaterial').value) - num($('fMarketing').value) - num($('fMisc').value) - amort();
+  $('pvFixed').textContent = money(amort());
+  var pv = $('pvProfit');
+  pv.textContent = (p >= 0 ? '+' : '') + money(p);
+  pv.className = p >= 0 ? 'pos' : 'neg';
+}
+function clearForm(keepDate){
+  var d = $('fDate').value;
+  $('entryForm').reset();
+  $('fDate').value = keepDate ? d : todayStr();
+  updatePreview();
+}
+function exitEdit(){
+  editing = null;
+  $('saveBtn').textContent = '保存今日经营 →';
+  $('cancelEdit').hidden = true;
+}
+
+$('entryForm').addEventListener('input', updatePreview);
+$('entryForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var d = $('fDate').value;
+  if(!d){ toast('请选择日期'); return; }
+  if(records[d] && editing !== d && !confirm(fmtDate(d) + ' 已有记录，要覆盖它吗？')) return;
+  var wasEdit = (editing === d) || !!records[d];
+  records[d] = {
+    revenue:   num($('fRevenue').value),
+    orders:    int($('fOrders').value),
+    material:  num($('fMaterial').value),
+    marketing: num($('fMarketing').value),
+    misc:      num($('fMisc').value),
+    note:      $('fNote').value.trim()
+  };
+  save();
+  viewMonth = d.slice(0,7);
+  renderAll();
+  toast(wasEdit ? '已更新 ' + fmtDate(d) + ' ✓' : '已保存 ✓ 今天也要加油呀');
+  exitEdit();
+  clearForm(true);
+});
+$('cancelEdit').addEventListener('click', function(){ exitEdit(); clearForm(false); });
+
+$('records').addEventListener('click', function(e){
+  var btn = e.target.closest('.op');
+  if(!btn) return;
+  var d = btn.getAttribute('data-date');
+  if(btn.getAttribute('data-act') === 'edit'){
+    var r = records[d];
+    if(!r) return;
+    $('fDate').value = d;
+    $('fRevenue').value = r.revenue || '';
+    $('fOrders').value = r.orders || '';
+    $('fMaterial').value = r.material || '';
+    $('fMarketing').value = r.marketing || '';
+    $('fMisc').value = r.misc || '';
+    $('fNote').value = r.note || '';
+    editing = d;
+    $('saveBtn').textContent = '保存修改';
+    $('cancelEdit').hidden = false;
+    updatePreview();
+    $('formCard').scrollIntoView({behavior:'smooth', block:'center'});
+  }else{
+    if(!confirm('确定删除 ' + fmtDate(d) + ' 的记录吗？')) return;
+    delete records[d];
+    if(editing === d){ exitEdit(); clearForm(false); }
+    save(); renderAll();
+    toast('已删除');
+  }
+});
+
+/* ---------- 设置 ---------- */
+function openSettings(){
+  $('sName').value = settings.shopName || '';
+  $('sRent').value = settings.rent || '';
+  $('sUtil').value = settings.utilities || '';
+  $('sDeco').value = settings.decoration || '';
+  $('sMonths').value = settings.decoMonths || '';
+  $('settingsModal').hidden = false;
+}
+$('settingsBtn').addEventListener('click', function(){
+  $('settingsWelcome').hidden = true;
+  openSettings();
+});
+$('settingsModal').addEventListener('click', function(e){
+  if(e.target === this) this.hidden = true;
+});
+$('settingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  settings.shopName   = $('sName').value.trim() || '豆豆拼豆小铺';
+  settings.rent       = num($('sRent').value);
+  settings.utilities  = num($('sUtil').value);
+  settings.decoration = num($('sDeco').value);
+  settings.decoMonths = Math.max(1, parseInt($('sMonths').value, 10) || 36);
+  save();
+  applyShopName();
+  renderAll(); updatePreview();
+  $('settingsModal').hidden = true;
+  toast('设置已保存 ✓');
+});
+function applyShopName(){
+  $('shopName').textContent = settings.shopName || '豆豆拼豆小铺';
+  document.title = (settings.shopName || '豆豆拼豆小铺') + ' · 经营看板';
+}
+
+/* ---------- 导入 / 导出 ---------- */
+$('exportBtn').addEventListener('click', function(){
+  var data = { settings:settings, records:records, exportedAt:new Date().toISOString() };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '拼豆小店数据-' + todayStr() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已导出 ✓');
+});
+$('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+$('importFile').addEventListener('change', function(){
+  var f = this.files[0];
+  if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var data = JSON.parse(rd.result);
+      if(data.settings && typeof data.settings === 'object'){
+        for(var k in data.settings) settings[k] = data.settings[k];
+      }
+      var n = 0;
+      if(data.records && typeof data.records === 'object'){
+        for(var d in data.records){
+          if(/^\d{4}-\d{2}-\d{2}$/.test(d) && typeof data.records[d] === 'object'){
+            records[d] = data.records[d]; n++;
+          }
+        }
+      }
+      save(); applyShopName(); renderAll(); updatePreview();
+      toast('已导入 ' + n + ' 条记录 ✓');
+    }catch(err){
+      toast('文件格式不对哦');
+    }
+    $('importFile').value = '';
+  };
+  rd.readAsText(f);
+});
+
+/* ---------- Toast ---------- */
+var toastTimer = null;
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+/* ---------- 初始化 ---------- */
+$('fDate').value = todayStr();
+applyShopName();
+renderAll();
+updatePreview();
+if(!localStorage.getItem(LS_SET)){
+  $('settingsWelcome').hidden = false;
+  openSettings();
+}
+})();
+</script>
+</body>
+</html>
