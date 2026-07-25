@@ -99,7 +99,7 @@ header{
 }
 .badge.past{color:#8A6D5C; background:#F6E4D0}
 .month-sub{color:var(--ink-soft); font-size:13px; letter-spacing:.5px}
-.monthbar .right{margin-left:auto; display:flex; gap:10px; align-items:center}
+.monthbar .right{margin-left:auto; display:flex; gap:14px; align-items:center}
 .linkbtn{
   border:none; background:none; cursor:pointer; font-family:inherit;
   color:var(--pink-deep); font-size:13px; font-weight:700; letter-spacing:1px;
@@ -127,7 +127,7 @@ header{
 
 /* ---------- 卡片与布局 ---------- */
 .grid{display:grid; grid-template-columns:390px 1fr; gap:16px; margin-bottom:16px}
-.grid2{display:grid; grid-template-columns:420px 1fr; gap:16px}
+.grid2{display:grid; grid-template-columns:440px 1fr; gap:16px}
 .card{
   background:var(--card); border-radius:24px; padding:24px;
   box-shadow:0 10px 24px rgba(190,140,90,.12); animation:rise .5s ease both;
@@ -140,18 +140,18 @@ header{
 /* ---------- 表单 ---------- */
 .field{display:block; margin-bottom:13px}
 .field span{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:6px; letter-spacing:1px}
-.field input{
+.field input,.field select{
   width:100%; padding:12px 14px; border-radius:14px; border:2px solid var(--line);
   background:#FFFCF8; font-family:inherit; font-size:15px; color:var(--ink); outline:none;
   transition:border-color .15s ease, box-shadow .15s ease;
 }
-.field input:focus{border-color:var(--pink); box-shadow:0 0 0 4px var(--pink-soft)}
+.field input:focus,.field select:focus{border-color:var(--pink); box-shadow:0 0 0 4px var(--pink-soft)}
 input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
 input[type=number]{-moz-appearance:textfield}
 .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 .preview{
   background:#FFF3E4; border:2px dashed #F5D9B8; border-radius:14px;
-  padding:11px 14px; font-size:13px; color:var(--ink-soft); margin:4px 0 14px;
+  padding:11px 14px; font-size:13px; color:var(--ink-soft); margin:4px 0 14px; line-height:1.8;
 }
 .preview b{font-size:15px; font-variant-numeric:tabular-nums}
 .btn.save{
@@ -172,27 +172,48 @@ input[type=number]{-moz-appearance:textfield}
   color:var(--ink-soft); font-size:14px; letter-spacing:1px;
 }
 
-/* ---------- 成本结构 ---------- */
-.cost-total{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
-.cost-total span{font-size:13px; color:var(--ink-soft); letter-spacing:1px}
-.cost-total b{font-size:24px; font-variant-numeric:tabular-nums}
-.cost-item{display:grid; grid-template-columns:96px 1fr 96px; gap:12px; align-items:center; padding:7px 0}
+/* ---------- 大额支出 ---------- */
+.exp-list{max-height:240px; overflow-y:auto; padding-right:4px; margin-bottom:6px}
+.exp-head,.exp-row{
+  display:grid; grid-template-columns:74px 1fr auto 88px 66px;
+  gap:8px; align-items:center; font-size:13px;
+}
+.exp-head{
+  color:var(--ink-soft); font-size:12px; letter-spacing:1px; padding:2px 10px 8px;
+  border-bottom:2px solid #F8ECDD;
+}
+.exp-row{padding:9px 10px; border-radius:12px; transition:background .12s ease}
+.exp-row:hover{background:#FFF7EE}
+.exp-row .ed{color:var(--ink-soft); font-size:12px; white-space:nowrap}
+.exp-row .en{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.exp-row .ea{text-align:right; font-variant-numeric:tabular-nums; font-weight:700}
+.cat{
+  display:inline-block; font-size:11px; font-weight:700; color:#fff;
+  background:var(--c); border-radius:999px; padding:3px 9px; letter-spacing:1px; white-space:nowrap;
+  box-shadow:inset -1px -2px 0 rgba(0,0,0,.10);
+}
+.divider{height:2px; background:#F8ECDD; border-radius:2px; margin:16px 0}
+.sec-title{font-size:13px; color:var(--ink-soft); letter-spacing:1.5px; margin-bottom:10px; display:flex; align-items:baseline; gap:8px}
+.sec-title b{margin-left:auto; color:var(--ink); font-size:15px; font-variant-numeric:tabular-nums}
+
+/* ---------- 支出构成 + 回本 ---------- */
+.cost-item{display:grid; grid-template-columns:96px 1fr 96px; gap:12px; align-items:center; padding:6px 0}
 .cost-item .nm{font-size:13.5px; display:flex; align-items:center; gap:7px}
 .cost-item .sw{width:10px; height:10px; border-radius:3px; flex:none; background:var(--c); box-shadow:inset -1px -2px 0 rgba(0,0,0,.08)}
 .cost-item .track{height:13px; background:#FBEFE2; border-radius:999px; overflow:hidden}
-.cost-item .fill{height:100%; border-radius:999px; background:var(--c); min-width:0; transition:width .4s ease}
+.cost-item .fill{height:100%; border-radius:999px; background:var(--c); transition:width .4s ease}
 .cost-item .val{text-align:right; font-size:13.5px; font-variant-numeric:tabular-nums; color:var(--ink)}
-.payback{margin-top:16px; background:#FFF7EE; border:2px dashed #F5D9B8; border-radius:16px; padding:14px 16px}
+.payback{margin-top:14px; background:#FFF7EE; border:2px dashed #F5D9B8; border-radius:16px; padding:14px 16px}
 .payback .pb-head{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--ink-soft); letter-spacing:1px}
 .payback .pb-head b{font-size:17px; color:var(--pink-deep); font-variant-numeric:tabular-nums}
 .payback .ptrack{height:11px; background:#F6E4D0; border-radius:999px; overflow:hidden; margin:9px 0 7px}
 .payback .pfill{height:100%; border-radius:999px; background:linear-gradient(90deg,#FFB35C,#F45B8F); transition:width .5s ease}
 .payback .pb-sub{font-size:12px; color:var(--ink-soft); line-height:1.7}
 
-/* ---------- 流水明细 ---------- */
+/* ---------- 每日流水 ---------- */
 #records{max-height:460px; overflow-y:auto; padding-right:4px}
 .rec-head,.rec-row{
-  display:grid; grid-template-columns:1.05fr .85fr .5fr .85fr .85fr .85fr 1.1fr 80px;
+  display:grid; grid-template-columns:1.05fr .9fr .5fr .9fr .9fr 1.2fr 80px;
   gap:8px; align-items:center; font-size:13.5px;
 }
 .rec-head{
@@ -213,7 +234,7 @@ input[type=number]{-moz-appearance:textfield}
 .op:hover{background:#FFE4C2}
 .op.del{background:#FFE9EC; color:#E0567A}
 .op.del:hover{background:#FFD6DE}
-.empty{text-align:center; padding:44px 0; color:var(--ink-soft); font-size:15px; letter-spacing:1px; line-height:2}
+.empty{text-align:center; padding:36px 0; color:var(--ink-soft); font-size:14.5px; letter-spacing:1px; line-height:2}
 
 /* ---------- 弹窗 ---------- */
 .modal-mask{
@@ -239,9 +260,8 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 @media (max-width:1020px){
   .stats{grid-template-columns:1fr 1fr}
   .grid,.grid2{grid-template-columns:1fr}
-  .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr .9fr 1.1fr 76px}
-  .rec-head span:nth-child(4),.rec-row span:nth-child(4),
-  .rec-head span:nth-child(5),.rec-row span:nth-child(5){display:none}
+  .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr 1fr 1.1fr 76px}
+  .rec-head span:nth-child(4),.rec-row span:nth-child(4){display:none}
 }
 @media (max-width:560px){
   .brand h1{font-size:22px}
@@ -251,6 +271,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
   .rec-head,.rec-row{grid-template-columns:1.2fr 1fr 1fr 72px; font-size:12.5px}
   .rec-head span:nth-child(3),.rec-row span:nth-child(3),
   .rec-head span:nth-child(6),.rec-row span:nth-child(6){display:none}
+  .exp-head,.exp-row{grid-template-columns:66px 1fr auto 80px 60px; font-size:12.5px}
 }
 </style>
 </head>
@@ -303,25 +324,25 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
       <span class="sub" id="stDays">0 个营业日</span>
     </div>
     <div class="stat" style="--c:#3ECF9A">
-      <span class="label">本月净利润</span>
-      <strong id="stProfit">¥0.00</strong>
-      <span class="sub" id="stProfitSub">已含装修摊销 ¥0.00</span>
-    </div>
-    <div class="stat" style="--c:#B9A7F9">
-      <span class="label">净利率</span>
-      <strong id="stMargin">—</strong>
-      <span class="sub" id="stMarginSub">经营利润 ¥0.00</span>
+      <span class="label">本月毛利</span>
+      <strong id="stGross">¥0.00</strong>
+      <span class="sub" id="stGrossSub">毛利率 —</span>
     </div>
     <div class="stat" style="--c:#FFB35C">
       <span class="label">平均客单价</span>
       <strong id="stAvg">—</strong>
       <span class="sub" id="stAvgSub">共 0 笔订单</span>
     </div>
+    <div class="stat" style="--c:#B9A7F9">
+      <span class="label">累计实际利润</span>
+      <strong id="stActual">¥0.00</strong>
+      <span class="sub" id="stActualSub">累计毛利 − 大额支出</span>
+    </div>
   </section>
 
   <div class="grid">
     <section class="card" id="formCard">
-      <h2><span class="dot" style="--c:#FF7BA9"></span>每日记账<span class="more">保存时自动扣除当天固定分摊</span></h2>
+      <h2><span class="dot" style="--c:#FF7BA9"></span>每日记账<span class="more">只扣当天房租水电，算毛利</span></h2>
       <form id="entryForm" autocomplete="off">
         <div class="two">
           <label class="field"><span>日期</span>
@@ -334,22 +355,12 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
         <label class="field"><span>营业额（元）</span>
           <input type="number" id="fRevenue" min="0" step="0.01" inputmode="decimal" placeholder="今天收入了多少？" required>
         </label>
-        <label class="field"><span>拼豆 / 材料成本（元）</span>
-          <input type="number" id="fMaterial" min="0" step="0.01" inputmode="decimal" placeholder="拼豆、配件、包装等消耗">
-        </label>
-        <div class="two">
-          <label class="field"><span>营销推广（元）</span>
-            <input type="number" id="fMarketing" min="0" step="0.01" inputmode="decimal" placeholder="推广、团购">
-          </label>
-          <label class="field"><span>杂项开支（元）</span>
-            <input type="number" id="fMisc" min="0" step="0.01" inputmode="decimal" placeholder="其他零碎支出">
-          </label>
-        </div>
         <label class="field"><span>今日备注（选填）</span>
           <input type="text" id="fNote" maxlength="30" placeholder="如：周末亲子体验活动，客流不错">
         </label>
         <div class="preview">
-          本日固定分摊 <b id="pvFixed">¥0.00</b>（房租水电 + 装修摊销），预计净利润 <b id="pvProfit" class="pos">+¥0.00</b>
+          本日房租水电分摊 <b id="pvFixed">¥0.00</b>，预计毛利 <b id="pvProfit" class="pos">+¥0.00</b><br>
+          <span style="font-size:12px">装修、补货等大额支出请在下方「大额支出」单独记录，不扣在这里</span>
         </div>
         <button type="submit" class="btn save" id="saveBtn">保存今日经营 →</button>
         <button type="button" class="btn ghost wide" id="cancelEdit" hidden>取消编辑</button>
@@ -357,27 +368,59 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
     </section>
 
     <section class="card">
-      <h2><span class="dot" style="--c:#3ECF9A"></span>收入与利润<span class="more">悬停查看每日明细</span></h2>
+      <h2><span class="dot" style="--c:#3ECF9A"></span>收入与毛利<span class="more">悬停查看每日明细</span></h2>
       <div class="legend">
         <span><i style="border-color:#F45B8F"></i>营业额</span>
-        <span><i class="dash" style="border-color:#8A6D5C"></i>净利润（虚线）</span>
+        <span><i class="dash" style="border-color:#8A6D5C"></i>毛利（虚线）</span>
       </div>
       <div class="chart-wrap">
-        <svg class="linechart" id="linechart" viewBox="0 0 660 240" role="img" aria-label="收入与利润趋势图"></svg>
+        <svg class="linechart" id="linechart" viewBox="0 0 660 240" role="img" aria-label="收入与毛利趋势图"></svg>
         <div class="chart-empty" id="chartEmpty" hidden>这个月还没有记录，先记一笔吧～</div>
       </div>
     </section>
   </div>
 
   <div class="grid2">
-    <section class="card">
-      <h2><span class="dot" style="--c:#FFB35C"></span>成本结构</h2>
-      <div class="cost-total"><span>本月总支出</span><b id="costTotal">¥0.00</b></div>
+    <section class="card" id="expCard">
+      <h2><span class="dot" style="--c:#FFB35C"></span>大额支出<span class="more">装修、补货等一次支出，可用很久</span></h2>
+      <form id="expForm" autocomplete="off">
+        <div class="two">
+          <label class="field"><span>支出名称</span>
+            <input type="text" id="eName" maxlength="20" placeholder="如：店面地板装修 / 补货拼豆" required>
+          </label>
+          <label class="field"><span>金额（元）</span>
+            <input type="number" id="eAmount" min="0" step="0.01" inputmode="decimal" placeholder="如 8000" required>
+          </label>
+        </div>
+        <div class="two">
+          <label class="field"><span>分类</span>
+            <select id="eCat">
+              <option value="装修">装修</option>
+              <option value="补货" selected>补货</option>
+              <option value="营销推广">营销推广</option>
+              <option value="杂项">杂项</option>
+              <option value="其他">其他</option>
+            </select>
+          </label>
+          <label class="field"><span>日期</span>
+            <input type="date" id="eDate" required>
+          </label>
+        </div>
+        <button type="submit" class="btn save" id="expSaveBtn" style="padding:11px; font-size:14px">添加这笔支出</button>
+        <button type="button" class="btn ghost wide" id="expCancelEdit" hidden>取消编辑</button>
+      </form>
+
+      <div class="exp-list" id="expList"></div>
+
+      <div class="divider"></div>
+
+      <div class="sec-title">大额支出构成（全部）<b id="costTotal">¥0.00</b></div>
       <div id="costList"></div>
+
       <div class="payback" id="payback">
-        <div class="pb-head"><span>装修回本进度</span><b id="pbPct">0%</b></div>
+        <div class="pb-head"><span>回本进度（累计毛利 ÷ 大额支出）</span><b id="pbPct">0%</b></div>
         <div class="ptrack"><div class="pfill" id="pbFill" style="width:0%"></div></div>
-        <div class="pb-sub" id="pbSub">累计经营利润 ¥0.00</div>
+        <div class="pb-sub" id="pbSub">累计毛利 ¥0.00</div>
       </div>
     </section>
 
@@ -389,14 +432,14 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 
   <footer>
     用 ❤ 和拼豆一颗一颗拼出来的看板<br>
-    数据只保存在这台电脑的浏览器里，记得定期「导出数据」备份哦
+    数据只保存在这台设备的浏览器里，记得定期「导出数据」备份哦
   </footer>
 </div>
 
 <div class="modal-mask" id="settingsModal" hidden>
   <div class="modal">
     <h2><span class="dot" style="--c:#FF7BA9"></span>小店设置</h2>
-    <p class="hint" id="settingsWelcome" hidden>欢迎开张 🎉 先填一下小店的基本成本，之后每天记账就会自动算好净利润啦～</p>
+    <p class="hint" id="settingsWelcome" hidden>欢迎开张 🎉 先填一下每月房租水电，之后每天记账就会自动算毛利啦～装修和补货在「大额支出」里单独记。</p>
     <form id="settingsForm" autocomplete="off">
       <label class="field"><span>店铺名称</span>
         <input type="text" id="sName" maxlength="12" placeholder="豆豆拼豆小铺">
@@ -409,15 +452,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
           <input type="number" id="sUtil" min="0" step="0.01" inputmode="decimal" placeholder="如 800">
         </label>
       </div>
-      <div class="two">
-        <label class="field"><span>装修总成本（元）</span>
-          <input type="number" id="sDeco" min="0" step="0.01" inputmode="decimal" placeholder="一次性投入">
-        </label>
-        <label class="field"><span>装修摊销（月）</span>
-          <input type="number" id="sMonths" min="1" step="1" inputmode="numeric" placeholder="如 36">
-        </label>
-      </div>
-      <p class="hint">计算方式：房租水电按「月 ÷ 30 天」摊到每个记账日；装修成本按「总成本 ÷ 摊销月数 ÷ 30 天」摊销。<br>经营利润 = 营业额 − 变动成本 − 房租水电分摊；净利润 = 经营利润 − 装修摊销。</p>
+      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 房租水电分摊（月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）</p>
       <button type="submit" class="btn save">保存设置</button>
     </form>
   </div>
@@ -427,7 +462,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 <script>
 (function(){
 "use strict";
-var LS_SET = 'beadshop_settings_v1', LS_REC = 'beadshop_records_v1';
+var LS_SET = 'beadshop_settings_v1', LS_REC = 'beadshop_records_v1', LS_EXP = 'beadshop_expenses_v1';
 
 function $(id){ return document.getElementById(id); }
 function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
@@ -452,6 +487,11 @@ function fmtDate(s){
   if(isNaN(dt)) return s;
   return (dt.getMonth()+1) + '月' + dt.getDate() + '日·周' + '日一二三四五六'.charAt(dt.getDay());
 }
+function fmtDateShort(s){
+  var dt = new Date(s + 'T00:00:00');
+  if(isNaN(dt)) return s;
+  return (dt.getMonth()+1) + '月' + dt.getDate() + '日';
+}
 function monthLabel(mk){ return mk.slice(0,4) + ' 年 ' + parseInt(mk.slice(5,7), 10) + ' 月'; }
 function shiftMonth(mk, delta){
   var y = +mk.slice(0,4), m = +mk.slice(5,7) + delta;
@@ -460,42 +500,62 @@ function shiftMonth(mk, delta){
   return y + '-' + pad2(m);
 }
 
+var CATS = [
+  { name:'装修',     color:'#FF7BA9' },
+  { name:'补货',     color:'#6FC7EA' },
+  { name:'营销推广', color:'#FFB35C' },
+  { name:'杂项',     color:'#B9A7F9' },
+  { name:'其他',     color:'#3ECF9A' }
+];
+function catColor(c){
+  for(var i = 0; i < CATS.length; i++) if(CATS[i].name === c) return CATS[i].color;
+  return '#C0AEA2';
+}
+
 var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, decoration:0, decoMonths:36 };
 var records  = load(LS_REC)  || {};
+var expenses = load(LS_EXP)  || [];
 var editing  = null;
+var expEditing = null;
 var viewMonth = todayStr().slice(0,7);
 
 function save(){
   localStorage.setItem(LS_SET, JSON.stringify(settings));
   localStorage.setItem(LS_REC, JSON.stringify(records));
+  localStorage.setItem(LS_EXP, JSON.stringify(expenses));
 }
+
+/* 旧版本迁移：设置里的「装修总成本」自动转成一笔大额支出 */
+if(num(settings.decoration) > 0){
+  var firstDay = Object.keys(records).sort()[0] || todayStr();
+  expenses.push({ id:'mig' + Date.now(), date:firstDay, name:'装修投入（旧设置迁移）', cat:'装修', amount:num(settings.decoration) });
+  settings.decoration = 0;
+  settings.decoMonths = 36;
+  save();
+}
+
 function dailyFixed(){ return (num(settings.rent) + num(settings.utilities)) / 30; }
-function dailyDeco(){ return num(settings.decoMonths) > 0 ? num(settings.decoration) / num(settings.decoMonths) / 30 : 0; }
-function amort(){ return dailyFixed() + dailyDeco(); }
-function varCost(r){ return num(r.material) + num(r.marketing) + num(r.misc); }
-function opProfit(r){ return num(r.revenue) - varCost(r) - dailyFixed(); }   /* 经营利润 */
-function recordProfit(r){ return opProfit(r) - dailyDeco(); }               /* 净利润 */
+function gross(r){ return num(r.revenue) - dailyFixed(); }   /* 每日毛利 = 营业额 − 房租水电分摊 */
 
 /* ---------- 汇总 ---------- */
 function aggregate(mk){
-  var a = { rev:0, mat:0, mar:0, mis:0, orders:0, days:0, opProfit:0, profit:0, cumOpProfit:0 };
+  var a = { rev:0, orders:0, days:0, gross:0, cumGross:0 };
   for(var d in records){
-    var r = records[d], op = opProfit(r);
-    a.cumOpProfit += op;
+    var g = gross(records[d]);
+    a.cumGross += g;
     if(d.slice(0,7) === mk){
-      a.rev    += num(r.revenue);
-      a.mat    += num(r.material);
-      a.mar    += num(r.marketing);
-      a.mis    += num(r.misc);
-      a.orders += int(r.orders);
-      a.opProfit += op;
-      a.profit   += recordProfit(r);
+      a.rev    += num(records[d].revenue);
+      a.orders += int(records[d].orders);
+      a.gross  += g;
       a.days++;
     }
   }
-  a.fixedAmort = dailyFixed() * a.days;
-  a.decoAmort  = dailyDeco()  * a.days;
   return a;
+}
+function totalExpenses(){
+  var t = 0;
+  for(var i = 0; i < expenses.length; i++) t += num(expenses[i].amount);
+  return t;
 }
 
 /* ---------- 月份栏 ---------- */
@@ -521,26 +581,23 @@ $('quickAdd').addEventListener('click', function(){
 
 /* ---------- 统计卡片 ---------- */
 function renderStats(a){
+  var tExp = totalExpenses();
+  var actual = a.cumGross - tExp;
   $('stRevenue').textContent = money(a.rev);
   $('stDays').textContent = a.days + ' 个营业日 · 日均 ' + money(a.days ? a.rev/a.days : 0);
-  var sp = $('stProfit');
-  sp.textContent = money(a.profit);
-  sp.className = a.profit >= 0 ? 'pos' : 'neg';
-  $('stProfitSub').textContent = '已含装修摊销 ' + money(a.decoAmort);
-  var sm = $('stMargin');
-  if(a.rev > 0){
-    var m = a.profit / a.rev * 100;
-    sm.textContent = m.toFixed(1) + '%';
-    sm.className = m >= 0 ? 'pos' : 'neg';
-  }else{
-    sm.textContent = '—'; sm.className = '';
-  }
-  $('stMarginSub').textContent = '经营利润 ' + money(a.opProfit);
+  var sg = $('stGross');
+  sg.textContent = money(a.gross);
+  sg.className = a.gross >= 0 ? 'pos' : 'neg';
+  $('stGrossSub').textContent = a.rev > 0 ? '毛利率 ' + (a.gross/a.rev*100).toFixed(1) + '%' : '本月还没有营业额';
   $('stAvg').textContent = a.orders > 0 ? money(a.rev / a.orders) : '—';
   $('stAvgSub').textContent = '共 ' + a.orders + ' 笔订单';
+  var sa = $('stActual');
+  sa.textContent = money(actual);
+  sa.className = actual >= 0 ? 'pos' : 'neg';
+  $('stActualSub').textContent = '累计毛利 ' + money(a.cumGross) + ' − 大额支出 ' + money(tExp);
 }
 
-/* ---------- 收入与利润折线图 ---------- */
+/* ---------- 收入与毛利折线图 ---------- */
 function renderChart(){
   var svg = $('linechart');
   var dates = Object.keys(records).filter(function(d){ return d.slice(0,7) === viewMonth; }).sort();
@@ -552,7 +609,7 @@ function renderChart(){
   var maxV = 1, i, r;
   for(i = 0; i < dates.length; i++){
     r = records[dates[i]];
-    maxV = Math.max(maxV, num(r.revenue), Math.abs(recordProfit(r)));
+    maxV = Math.max(maxV, num(r.revenue), Math.abs(gross(r)));
   }
   maxV *= 1.15;
   var n = dates.length;
@@ -560,11 +617,10 @@ function renderChart(){
   function y(v){ return pt + (1 - v / maxV) * (base - pt); }
 
   var s = '';
-  /* 网格与 Y 轴刻度 */
   var ticks = [0, maxV/2, maxV];
   for(i = 0; i < ticks.length; i++){
     var gy = y(ticks[i]);
-    s += '<line x1="' + pl + '" y1="' + gy + '" x2="' + (W-pr) + '" y2="' + gy + '" stroke="#F6E9DA" stroke-width="1"' + (i === 0 ? ' stroke-dasharray="1"' : ' stroke-dasharray="4 5"') + '/>'
+    s += '<line x1="' + pl + '" y1="' + gy + '" x2="' + (W-pr) + '" y2="' + gy + '" stroke="#F6E9DA" stroke-width="1"' + (i === 0 ? '' : ' stroke-dasharray="4 5"') + '/>'
        + '<text x="' + (pl-8) + '" y="' + (gy+4) + '" text-anchor="end">¥' + shortMoney(ticks[i]) + '</text>';
   }
 
@@ -572,11 +628,10 @@ function renderChart(){
   for(i = 0; i < dates.length; i++){
     r = records[dates[i]];
     revPts.push([x(i), y(num(r.revenue))]);
-    proPts.push([x(i), y(recordProfit(r))]);
+    proPts.push([x(i), y(gross(r))]);
   }
   function ptsStr(pts){ return pts.map(function(p){ return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '); }
 
-  /* 营业额渐变面积 */
   var area = 'M ' + revPts[0][0].toFixed(1) + ',' + base;
   for(i = 0; i < n; i++) area += ' L ' + revPts[i][0].toFixed(1) + ',' + revPts[i][1].toFixed(1);
   area += ' L ' + revPts[n-1][0].toFixed(1) + ',' + base + ' Z';
@@ -585,15 +640,13 @@ function renderChart(){
      + '<stop offset="1" stop-color="#F45B8F" stop-opacity=".02"/></linearGradient></defs>'
      + '<path d="' + area + '" fill="url(#ag)"/>';
 
-  /* 折线 */
   s += '<polyline points="' + ptsStr(revPts) + '" fill="none" stroke="#F45B8F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
      + '<polyline points="' + ptsStr(proPts) + '" fill="none" stroke="#8A6D5C" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round"/>';
 
-  /* 数据点 + 悬停提示 + X 轴标签 */
   for(i = 0; i < n; i++){
     var d = dates[i]; r = records[d];
-    var p = recordProfit(r);
-    var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n净利润 ' + (p >= 0 ? '+' : '') + money(p) + (r.note ? '\n备注：' + r.note : '');
+    var p = gross(r);
+    var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n毛利 ' + (p >= 0 ? '+' : '') + money(p) + (r.note ? '\n备注：' + r.note : '');
     s += '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="4.2" fill="#F45B8F" stroke="#fff" stroke-width="2"/>'
        + '<circle cx="' + proPts[i][0] + '" cy="' + proPts[i][1] + '" r="3.6" fill="#8A6D5C" stroke="#fff" stroke-width="2"/>'
        + '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="12" fill="transparent"><title>' + esc(tip) + '</title></circle>'
@@ -602,38 +655,61 @@ function renderChart(){
   svg.innerHTML = s;
 }
 
-/* ---------- 成本结构 + 装修回本 ---------- */
+/* ---------- 大额支出 ---------- */
+function renderExpenses(){
+  var box = $('expList');
+  if(!expenses.length){
+    box.innerHTML = '<div class="empty">🧱 还没有大额支出<br><small>把开店装修、每次补货记上来吧～</small></div>';
+    return;
+  }
+  var sorted = expenses.slice().sort(function(a, b){
+    return a.date === b.date ? String(b.id).localeCompare(String(a.id)) : (a.date < b.date ? 1 : -1);
+  });
+  var html = '<div class="exp-head"><span>日期</span><span>名称</span><span>分类</span><span style="text-align:right">金额</span><span>操作</span></div>';
+  for(var i = 0; i < sorted.length; i++){
+    var e = sorted[i];
+    html += '<div class="exp-row">'
+      + '<span class="ed">' + fmtDateShort(e.date) + '</span>'
+      + '<span class="en" title="' + esc(e.name) + '">' + esc(e.name) + '</span>'
+      + '<span><span class="cat" style="--c:' + catColor(e.cat) + '">' + esc(e.cat) + '</span></span>'
+      + '<span class="ea">' + money(e.amount) + '</span>'
+      + '<span class="ops"><button class="op" data-act="edit" data-id="' + esc(e.id) + '">编辑</button>'
+      + '<button class="op del" data-act="del" data-id="' + esc(e.id) + '">删除</button></span>'
+      + '</div>';
+  }
+  box.innerHTML = html;
+}
+
 function renderCosts(a){
-  var items = [
-    { name:'拼豆 / 材料', value:a.mat,        color:'#6FC7EA' },
-    { name:'营销推广',    value:a.mar,        color:'#FFB35C' },
-    { name:'杂项开支',    value:a.mis,        color:'#B9A7F9' },
-    { name:'房租与水电',  value:a.fixedAmort, color:'#FF7BA9' },
-    { name:'装修摊销',    value:a.decoAmort,  color:'#FFD166' }
-  ];
-  var total = 0, max = 1, i;
-  for(i = 0; i < items.length; i++){ total += items[i].value; max = Math.max(max, items[i].value); }
-  $('costTotal').textContent = money(total);
+  var totals = {}, i;
+  for(i = 0; i < CATS.length; i++) totals[CATS[i].name] = 0;
+  for(i = 0; i < expenses.length; i++){
+    var c = expenses[i].cat;
+    if(!(c in totals)) c = '其他';
+    totals[c] += num(expenses[i].amount);
+  }
+  var total = totalExpenses(), max = 1;
+  for(i = 0; i < CATS.length; i++) max = Math.max(max, totals[CATS[i].name]);
+  $('costTotal').textContent = money(total) + ' · 共 ' + expenses.length + ' 笔';
   var html = '';
-  for(i = 0; i < items.length; i++){
-    var w = Math.max(items[i].value / max * 100, items[i].value > 0 ? 2 : 0);
-    html += '<div class="cost-item" style="--c:' + items[i].color + '">'
-          + '<span class="nm"><span class="sw"></span>' + items[i].name + '</span>'
+  for(i = 0; i < CATS.length; i++){
+    var w = Math.max(totals[CATS[i].name] / max * 100, totals[CATS[i].name] > 0 ? 2 : 0);
+    html += '<div class="cost-item" style="--c:' + CATS[i].color + '">'
+          + '<span class="nm"><span class="sw"></span>' + CATS[i].name + '</span>'
           + '<span class="track"><span class="fill" style="display:block;width:' + w.toFixed(1) + '%"></span></span>'
-          + '<span class="val">' + money(items[i].value) + '</span></div>';
+          + '<span class="val">' + money(totals[CATS[i].name]) + '</span></div>';
   }
   $('costList').innerHTML = html;
 
-  var decoTotal = num(settings.decoration);
-  if(decoTotal > 0){
+  if(total > 0){
     $('payback').hidden = false;
-    var pct = Math.min(Math.max(a.cumOpProfit / decoTotal * 100, 0), 100);
-    var remain = Math.max(decoTotal - a.cumOpProfit, 0);
+    var pct = Math.min(Math.max(a.cumGross / total * 100, 0), 100);
+    var remain = Math.max(total - a.cumGross, 0);
     $('pbPct').textContent = pct.toFixed(1) + '%';
     $('pbFill').style.width = pct.toFixed(1) + '%';
     $('pbSub').textContent = remain > 0
-      ? '累计经营利润 ' + money(a.cumOpProfit) + '，距离覆盖装修投入还差 ' + money(remain)
-      : '🎉 装修投入已全部回本！累计经营利润 ' + money(a.cumOpProfit);
+      ? '累计毛利 ' + money(a.cumGross) + '，距离回本还差 ' + money(remain)
+      : '🎉 已全部回本！实际利润 ' + money(a.cumGross - total);
   }else{
     $('payback').hidden = true;
   }
@@ -645,19 +721,18 @@ function renderRecords(){
   var dates = Object.keys(records).filter(function(d){ return d.slice(0,7) === viewMonth; }).sort().reverse();
   $('recMore').textContent = '本月已记录 ' + dates.length + ' 天';
   if(!dates.length){
-    box.innerHTML = '<div class="empty">🫘 这个月还没有记录<br><small>从左边「每日记账」开始吧～</small></div>';
+    box.innerHTML = '<div class="empty">🫘 这个月还没有记录<br><small>从上方「每日记账」开始吧～</small></div>';
     return;
   }
-  var html = '<div class="rec-head"><span>日期</span><span>营业额</span><span>订单</span><span>变动成本</span><span>固定分摊</span><span>净利润</span><span>备注</span><span>操作</span></div>';
+  var html = '<div class="rec-head"><span>日期</span><span>营业额</span><span>订单</span><span>房租分摊</span><span>毛利</span><span>备注</span><span>操作</span></div>';
   for(var i = 0; i < dates.length; i++){
     var d = dates[i], r = records[d];
-    var p = recordProfit(r);
+    var p = gross(r);
     html += '<div class="rec-row">'
       + '<span class="d">' + fmtDate(d) + '</span>'
       + '<span>' + money(r.revenue) + '</span>'
       + '<span>' + int(r.orders) + '</span>'
-      + '<span>' + money(varCost(r)) + '</span>'
-      + '<span>' + money(amort()) + '</span>'
+      + '<span>' + money(dailyFixed()) + '</span>'
       + '<span class="p ' + (p >= 0 ? 'pos' : 'neg') + '">' + (p >= 0 ? '+' : '') + money(p) + '</span>'
       + '<span class="note" title="' + esc(r.note || '') + '">' + (r.note ? esc(r.note) : '—') + '</span>'
       + '<span class="ops"><button class="op" data-act="edit" data-date="' + d + '">编辑</button>'
@@ -672,14 +747,15 @@ function renderAll(){
   renderMonthBar(a);
   renderStats(a);
   renderChart();
+  renderExpenses();
   renderCosts(a);
   renderRecords();
 }
 
-/* ---------- 表单 ---------- */
+/* ---------- 每日记账表单 ---------- */
 function updatePreview(){
-  var p = num($('fRevenue').value) - num($('fMaterial').value) - num($('fMarketing').value) - num($('fMisc').value) - amort();
-  $('pvFixed').textContent = money(amort());
+  var p = num($('fRevenue').value) - dailyFixed();
+  $('pvFixed').textContent = money(dailyFixed());
   var pv = $('pvProfit');
   pv.textContent = (p >= 0 ? '+' : '') + money(p);
   pv.className = p >= 0 ? 'pos' : 'neg';
@@ -703,14 +779,11 @@ $('entryForm').addEventListener('submit', function(e){
   if(!d){ toast('请选择日期'); return; }
   if(records[d] && editing !== d && !confirm(fmtDate(d) + ' 已有记录，要覆盖它吗？')) return;
   var wasEdit = (editing === d) || !!records[d];
-  records[d] = {
-    revenue:   num($('fRevenue').value),
-    orders:    int($('fOrders').value),
-    material:  num($('fMaterial').value),
-    marketing: num($('fMarketing').value),
-    misc:      num($('fMisc').value),
-    note:      $('fNote').value.trim()
-  };
+  records[d] = Object.assign({}, records[d], {
+    revenue: num($('fRevenue').value),
+    orders:  int($('fOrders').value),
+    note:    $('fNote').value.trim()
+  });
   save();
   viewMonth = d.slice(0,7);
   renderAll();
@@ -730,9 +803,6 @@ $('records').addEventListener('click', function(e){
     $('fDate').value = d;
     $('fRevenue').value = r.revenue || '';
     $('fOrders').value = r.orders || '';
-    $('fMaterial').value = r.material || '';
-    $('fMarketing').value = r.marketing || '';
-    $('fMisc').value = r.misc || '';
     $('fNote').value = r.note || '';
     editing = d;
     $('saveBtn').textContent = '保存修改';
@@ -748,13 +818,74 @@ $('records').addEventListener('click', function(e){
   }
 });
 
+/* ---------- 大额支出表单 ---------- */
+function clearExpForm(){
+  $('expForm').reset();
+  $('eDate').value = todayStr();
+}
+function exitExpEdit(){
+  expEditing = null;
+  $('expSaveBtn').textContent = '添加这笔支出';
+  $('expCancelEdit').hidden = true;
+}
+$('expForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var name = $('eName').value.trim();
+  var amount = num($('eAmount').value);
+  var d = $('eDate').value;
+  if(!name){ toast('请填写支出名称'); return; }
+  if(amount <= 0){ toast('金额要大于 0 哦'); return; }
+  if(!d){ toast('请选择日期'); return; }
+  if(expEditing){
+    for(var i = 0; i < expenses.length; i++){
+      if(String(expenses[i].id) === String(expEditing)){
+        expenses[i] = { id:expenses[i].id, date:d, name:name, cat:$('eCat').value, amount:amount };
+        break;
+      }
+    }
+    toast('已更新这笔支出 ✓');
+  }else{
+    expenses.push({ id:'e' + Date.now() + Math.floor(Math.random()*1000), date:d, name:name, cat:$('eCat').value, amount:amount });
+    toast('已添加 ' + name + ' ' + money(amount) + ' ✓');
+  }
+  save();
+  exitExpEdit();
+  clearExpForm();
+  renderAll();
+});
+$('expCancelEdit').addEventListener('click', function(){ exitExpEdit(); clearExpForm(); });
+
+$('expList').addEventListener('click', function(e){
+  var btn = e.target.closest('.op');
+  if(!btn) return;
+  var id = btn.getAttribute('data-id');
+  var idx = -1;
+  for(var i = 0; i < expenses.length; i++) if(String(expenses[i].id) === String(id)){ idx = i; break; }
+  if(idx < 0) return;
+  if(btn.getAttribute('data-act') === 'edit'){
+    var it = expenses[idx];
+    $('eName').value = it.name;
+    $('eAmount').value = it.amount;
+    $('eCat').value = it.cat;
+    $('eDate').value = it.date;
+    expEditing = it.id;
+    $('expSaveBtn').textContent = '保存修改';
+    $('expCancelEdit').hidden = false;
+    $('expCard').scrollIntoView({behavior:'smooth', block:'center'});
+  }else{
+    if(!confirm('确定删除「' + expenses[idx].name + '」这笔支出吗？')) return;
+    expenses.splice(idx, 1);
+    if(expEditing && String(expEditing) === String(id)){ exitExpEdit(); clearExpForm(); }
+    save(); renderAll();
+    toast('已删除');
+  }
+});
+
 /* ---------- 设置 ---------- */
 function openSettings(){
   $('sName').value = settings.shopName || '';
   $('sRent').value = settings.rent || '';
   $('sUtil').value = settings.utilities || '';
-  $('sDeco').value = settings.decoration || '';
-  $('sMonths').value = settings.decoMonths || '';
   $('settingsModal').hidden = false;
 }
 $('settingsBtn').addEventListener('click', function(){
@@ -766,11 +897,9 @@ $('settingsModal').addEventListener('click', function(e){
 });
 $('settingsForm').addEventListener('submit', function(e){
   e.preventDefault();
-  settings.shopName   = $('sName').value.trim() || '豆豆拼豆小铺';
-  settings.rent       = num($('sRent').value);
-  settings.utilities  = num($('sUtil').value);
-  settings.decoration = num($('sDeco').value);
-  settings.decoMonths = Math.max(1, parseInt($('sMonths').value, 10) || 36);
+  settings.shopName  = $('sName').value.trim() || '豆豆拼豆小铺';
+  settings.rent      = num($('sRent').value);
+  settings.utilities = num($('sUtil').value);
   save();
   applyShopName();
   renderAll(); updatePreview();
@@ -784,7 +913,7 @@ function applyShopName(){
 
 /* ---------- 导入 / 导出 ---------- */
 $('exportBtn').addEventListener('click', function(){
-  var data = { settings:settings, records:records, exportedAt:new Date().toISOString() };
+  var data = { settings:settings, records:records, expenses:expenses, exportedAt:new Date().toISOString() };
   var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -812,8 +941,23 @@ $('importFile').addEventListener('change', function(){
           }
         }
       }
+      var m = 0;
+      if(Array.isArray(data.expenses)){
+        var seen = {};
+        for(var i = 0; i < expenses.length; i++) seen[String(expenses[i].id)] = true;
+        for(var j = 0; j < data.expenses.length; j++){
+          var it = data.expenses[j];
+          if(it && typeof it === 'object' && /^\d{4}-\d{2}-\d{2}$/.test(it.date || '')){
+            var nid = String(it.id || ('e' + Date.now() + j));
+            if(seen[nid]) nid = nid + '_i' + j;
+            seen[nid] = true;
+            expenses.push({ id:nid, date:it.date, name:String(it.name || '未命名支出').slice(0,20), cat:String(it.cat || '其他'), amount:num(it.amount) });
+            m++;
+          }
+        }
+      }
       save(); applyShopName(); renderAll(); updatePreview();
-      toast('已导入 ' + n + ' 条记录 ✓');
+      toast('已导入 ' + n + ' 条流水、' + m + ' 笔大额支出 ✓');
     }catch(err){
       toast('文件格式不对哦');
     }
@@ -834,6 +978,7 @@ function toast(msg){
 
 /* ---------- 初始化 ---------- */
 $('fDate').value = todayStr();
+$('eDate').value = todayStr();
 applyShopName();
 renderAll();
 updatePreview();
