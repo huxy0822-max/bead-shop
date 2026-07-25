@@ -647,13 +647,25 @@ function cloudLoad(){
       return r.json();
     });
 }
-function applyCloud(doc){
+function mergeCloud(doc){
+  var cloudRec = (doc.records && typeof doc.records === 'object') ? doc.records : {};
+  var cloudExp = Array.isArray(doc.expenses) ? doc.expenses : [];
+  var cloudPkg = (doc.pkgSales && typeof doc.pkgSales === 'object') ? doc.pkgSales : {};
+  /* 设置以云端为准；流水/支出/套餐销量做并集合并，本地与云端的数据都不丢 */
   settings = Object.assign({ shopName:'豆豆拼豆小铺', rent:0, utilities:0, parking:0, property:0, decoration:0, decoMonths:36, packages:[] }, doc.settings || {});
   if(!Array.isArray(settings.packages)) settings.packages = [];
-  expenses = Array.isArray(doc.expenses) ? doc.expenses : [];
-  records = (doc.records && typeof doc.records === 'object') ? doc.records : {};
-  pkgSales = (doc.pkgSales && typeof doc.pkgSales === 'object') ? doc.pkgSales : {};
-  lastPushed = contentKey();
+  var mergedExp = [], seen = {};
+  cloudExp.concat(expenses).forEach(function(e){
+    if(!e) return;
+    var k = String(e.id || JSON.stringify(e));
+    if(!seen[k]){ seen[k] = 1; mergedExp.push(e); }
+  });
+  records = Object.assign({}, records, cloudRec);
+  expenses = mergedExp;
+  var mergedPkg = {}, d;
+  for(d in pkgSales) mergedPkg[d] = pkgSales[d];
+  for(d in cloudPkg) mergedPkg[d] = Object.assign({}, pkgSales[d] || {}, cloudPkg[d]);
+  pkgSales = mergedPkg;
   localStorage.setItem(LS_SET, JSON.stringify(settings));
   localStorage.setItem(LS_REC, JSON.stringify(records));
   localStorage.setItem(LS_EXP, JSON.stringify(expenses));
@@ -1312,9 +1324,10 @@ window.addEventListener('online', function(){ queueSync(); });
 
 cloudLoad().then(function(doc){
   if(doc && typeof doc === 'object'){
-    applyCloud(doc);
+    lastPushed = JSON.stringify({ s:doc.settings || {}, r:doc.records || {}, e:Array.isArray(doc.expenses) ? doc.expenses : [], p:doc.pkgSales || {} });
+    mergeCloud(doc);
     cloudReady = true;
-    setBadge('云端已同步 ' + nowTime(), 'ok');
+    pushChanges();   /* 本地有云端没有的数据时，合并后自动补传 */
   }else{
     cloudReady = true;
     if(Object.keys(records).length || expenses.length || localStorage.getItem(LS_SET)){
