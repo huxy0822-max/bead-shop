@@ -128,6 +128,7 @@ header{
 /* ---------- 卡片与布局 ---------- */
 .grid{display:grid; grid-template-columns:390px 1fr; gap:16px; margin-bottom:16px}
 .grid2{display:grid; grid-template-columns:440px 1fr; gap:16px}
+.fullrow{margin-bottom:16px}
 .card{
   background:var(--card); border-radius:24px; padding:24px;
   box-shadow:0 10px 24px rgba(190,140,90,.12); animation:rise .5s ease both;
@@ -161,6 +162,8 @@ input[type=number]{-moz-appearance:textfield}
 }
 
 /* ---------- 套餐 ---------- */
+.pkg-cols{display:grid; grid-template-columns:320px 1fr; gap:26px; align-items:start}
+.pkg-right{border-left:2px dashed #F8ECDD; padding-left:26px; min-height:120px}
 .pkg-area{background:#FFFCF8; border:2px solid var(--line); border-radius:14px; padding:10px 14px; margin-bottom:13px}
 .pkg-title{font-size:13px; color:var(--ink-soft); letter-spacing:1px; display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px}
 .pkg-title b{color:var(--pink-deep); font-size:13px; font-variant-numeric:tabular-nums}
@@ -280,6 +283,8 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 @media (max-width:1020px){
   .stats{grid-template-columns:1fr 1fr}
   .grid,.grid2{grid-template-columns:1fr}
+  .pkg-cols{grid-template-columns:1fr}
+  .pkg-right{border-left:none; padding-left:0; border-top:2px dashed #F8ECDD; padding-top:18px}
   .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr 1fr 1fr 76px}
   .rec-head span:nth-child(4),.rec-row span:nth-child(4){display:none}
 }
@@ -374,7 +379,6 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
         <label class="field"><span>营业额（元）</span>
           <input type="number" id="fRevenue" min="0" step="0.01" inputmode="decimal" placeholder="今天收入了多少？" required>
         </label>
-        <div class="pkg-area" id="pkgArea"></div>
         <label class="field"><span>今日备注（选填）</span>
           <input type="text" id="fNote" maxlength="30" placeholder="如：周末亲子体验活动，客流不错">
         </label>
@@ -397,13 +401,25 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
         <svg class="linechart" id="linechart" viewBox="0 0 660 240" role="img" aria-label="收入与毛利趋势图"></svg>
         <div class="chart-empty" id="chartEmpty" hidden>这个月还没有记录，先记一笔吧～</div>
       </div>
-      <div id="pkgRankWrap" hidden>
-        <div class="divider"></div>
+    </section>
+  </div>
+
+  <section class="card fullrow" id="pkgCard">
+    <h2><span class="dot" style="--c:#6FC7EA"></span>套餐销量<span class="more">独立板块，想记就记，不影响每日记账</span></h2>
+    <div class="pkg-cols">
+      <div>
+        <label class="field"><span>日期</span>
+          <input type="date" id="pkDate">
+        </label>
+        <div class="pkg-area" id="pkgArea"></div>
+        <button class="btn save" id="pkgSaveBtn" style="padding:12px; font-size:15px">保存套餐销量</button>
+      </div>
+      <div class="pkg-right">
         <div class="sec-title">本月套餐销量榜<b id="pkgRankTotal"></b></div>
         <div id="pkgRank"></div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <div class="grid2">
     <section class="card" id="expCard">
@@ -500,7 +516,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
       <button type="button" class="btn ghost wide" id="pkgAddBtn">＋ 添加套餐（立即生效）</button>
 
       <div class="divider"></div>
-      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业，月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）<br>· 套餐添加后立即生效，每日记账里可按套餐记销量，自动生成销量榜</p>
+      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业，月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）<br>· 套餐添加后立即生效，在独立的「套餐销量」板块记录，不影响每日记账</p>
       <button type="submit" class="btn save">保存设置</button>
     </form>
   </div>
@@ -510,7 +526,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 <script>
 (function(){
 "use strict";
-var LS_SET = 'beadshop_settings_v1', LS_REC = 'beadshop_records_v1', LS_EXP = 'beadshop_expenses_v1';
+var LS_SET = 'beadshop_settings_v1', LS_REC = 'beadshop_records_v1', LS_EXP = 'beadshop_expenses_v1', LS_PKG = 'beadshop_pkgsales_v1';
 
 function $(id){ return document.getElementById(id); }
 function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
@@ -565,25 +581,38 @@ var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilitie
 if(!Array.isArray(settings.packages)) settings.packages = [];
 var records  = load(LS_REC)  || {};
 var expenses = load(LS_EXP)  || [];
+var pkgSales = load(LS_PKG)  || {};   /* 独立板块：{ 'YYYY-MM-DD': {套餐id: 份数} } */
 var editing  = null;
 var expEditing = null;
 var viewMonth = todayStr().slice(0,7);
-var pkgDraft = {};   /* 表单里各套餐当前份数 */
+var pkgDraft = {};   /* 套餐板块里各套餐当前份数 */
 
 function save(){
   localStorage.setItem(LS_SET, JSON.stringify(settings));
   localStorage.setItem(LS_REC, JSON.stringify(records));
   localStorage.setItem(LS_EXP, JSON.stringify(expenses));
+  localStorage.setItem(LS_PKG, JSON.stringify(pkgSales));
 }
 
-/* 旧版本迁移：设置里的「装修总成本」自动转成一笔大额支出 */
+/* 旧版本迁移 1：设置里的「装修总成本」自动转成一笔大额支出 */
+var migrated = false;
 if(num(settings.decoration) > 0){
   var firstDay = Object.keys(records).sort()[0] || todayStr();
   expenses.push({ id:'mig' + Date.now(), date:firstDay, name:'装修投入（旧设置迁移）', cat:'装修', amount:num(settings.decoration) });
   settings.decoration = 0;
   settings.decoMonths = 36;
-  save();
+  migrated = true;
 }
+/* 旧版本迁移 2：流水里的套餐销量搬到独立板块 */
+for(var md in records){
+  var rp = records[md].packages;
+  if(rp && !pkgSales[md]){
+    var has = false;
+    for(var mk2 in rp){ if(int(rp[mk2]) > 0){ has = true; break; } }
+    if(has){ pkgSales[md] = rp; migrated = true; }
+  }
+}
+if(migrated) save();
 
 function dailyFixed(){ return (num(settings.rent) + num(settings.utilities) + num(settings.parking) + num(settings.property)) / 30; }
 function gross(r){ return num(r.revenue) - dailyFixed(); }   /* 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业） */
@@ -597,11 +626,12 @@ function pkgIndex(id){
 function pkgName(id){ var i = pkgIndex(id); return i >= 0 ? settings.packages[i].name : '（已删除套餐）'; }
 function pkgPrice(id){ var i = pkgIndex(id); return i >= 0 ? num(settings.packages[i].price) : 0; }
 function pkgColor(id){ var i = pkgIndex(id); return i >= 0 ? PKG_COLORS[i % PKG_COLORS.length] : '#C0AEA2'; }
-function topPkg(r){
-  if(!r || !r.packages) return null;
+function topPkgDate(d){
+  var pk = pkgSales[d];
+  if(!pk) return null;
   var best = null;
-  for(var id in r.packages){
-    var q = int(r.packages[id]);
+  for(var id in pk){
+    var q = int(pk[id]);
     if(q > 0 && (!best || q > best.qty)) best = { name:pkgName(id), qty:q };
   }
   return best;
@@ -717,7 +747,7 @@ function renderChart(){
     var d = dates[i]; r = records[d];
     var p = gross(r);
     var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n毛利 ' + (p >= 0 ? '+' : '') + money(p);
-    var top = topPkg(r);
+    var top = topPkgDate(d);
     if(top) tip += '\n销冠：' + top.name + ' ×' + top.qty;
     if(r.note) tip += '\n备注：' + r.note;
     s += '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="4.2" fill="#F45B8F" stroke="#fff" stroke-width="2"/>'
@@ -728,18 +758,80 @@ function renderChart(){
   svg.innerHTML = s;
 }
 
-/* ---------- 套餐销量榜 ---------- */
+/* ---------- 套餐板块 ---------- */
+function renderPkgInputs(){
+  var box = $('pkgArea');
+  var pkgs = settings.packages;
+  if(!pkgs.length){
+    box.innerHTML = '<div class="pkg-hint">📦 还没配置套餐，<button type="button" class="linkbtn" id="goPkg">去「小店设置」添加</button> 后就能记销量</div>';
+    return;
+  }
+  var html = '<div class="pkg-title">各套餐销量<b id="pkgTotal">合计 0 份</b></div>';
+  for(var i = 0; i < pkgs.length; i++){
+    var q = int(pkgDraft[pkgs[i].id]);
+    html += '<div class="pkg-row">'
+          + '<span class="pn">' + esc(pkgs[i].name) + '<i>' + money(pkgs[i].price) + '</i></span>'
+          + '<span class="stepper">'
+          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="-1">−</button>'
+          + '<b id="pq_' + pkgs[i].id + '">' + q + '</b>'
+          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="1">＋</button>'
+          + '</span></div>';
+  }
+  box.innerHTML = html;
+  updatePkgTotal();
+}
+function updatePkgTotal(){
+  var t = 0;
+  for(var id in pkgDraft) t += int(pkgDraft[id]);
+  var el = $('pkgTotal');
+  if(el) el.textContent = '合计 ' + t + ' 份';
+}
+$('pkgArea').addEventListener('click', function(e){
+  if(e.target && e.target.id === 'goPkg'){
+    $('settingsWelcome').hidden = true;
+    openSettings();
+    return;
+  }
+  var btn = e.target.closest('.st');
+  if(!btn) return;
+  var id = btn.getAttribute('data-id');
+  var q = Math.max(0, Math.min(999, int(pkgDraft[id]) + int(btn.getAttribute('data-d'))));
+  if(q === 0) delete pkgDraft[id]; else pkgDraft[id] = q;
+  var b = $('pq_' + id);
+  if(b) b.textContent = q;
+  updatePkgTotal();
+});
+$('pkDate').addEventListener('change', function(){
+  pkgDraft = Object.assign({}, pkgSales[$('pkDate').value] || {});
+  renderPkgInputs();
+});
+$('pkgSaveBtn').addEventListener('click', function(){
+  var d = $('pkDate').value;
+  if(!d){ toast('请选择日期'); return; }
+  if(!settings.packages.length){ toast('先去「小店设置」添加套餐'); return; }
+  var out = {};
+  for(var pid in pkgDraft){ if(int(pkgDraft[pid]) > 0) out[pid] = int(pkgDraft[pid]); }
+  if(pkgSales[d] && !confirm(fmtDate(d) + ' 已有套餐销量，要覆盖吗？')) return;
+  if(Object.keys(out).length) pkgSales[d] = out;
+  else delete pkgSales[d];
+  save();
+  renderAll();
+  toast('套餐销量已保存 ✓');
+});
+
 function renderPkgRank(){
-  var wrap = $('pkgRankWrap');
+  var box = $('pkgRank');
   var sums = {}, d, id;
-  for(d in records){
+  for(d in pkgSales){
     if(d.slice(0,7) !== viewMonth) continue;
-    var pk = records[d].packages;
-    if(!pk) continue;
-    for(id in pk) sums[id] = (sums[id] || 0) + int(pk[id]);
+    for(id in pkgSales[d]) sums[id] = (sums[id] || 0) + int(pkgSales[d][id]);
   }
   var ids = Object.keys(sums).filter(function(i){ return sums[i] > 0; });
-  if(!ids.length){ wrap.hidden = true; return; }
+  if(!ids.length){
+    box.innerHTML = '<div class="empty">🍡 本月还没有套餐销量<br><small>左边选好日期，随手记几份就有排行啦</small></div>';
+    $('pkgRankTotal').textContent = '';
+    return;
+  }
   ids.sort(function(x, y){ return sums[y] - sums[x]; });
   var max = sums[ids[0]], totalQty = 0, totalAmt = 0, html = '';
   for(var i = 0; i < ids.length; i++){
@@ -747,13 +839,12 @@ function renderPkgRank(){
     totalQty += qty; totalAmt += qty * price;
     var w = Math.max(qty / max * 100, 2);
     html += '<div class="cost-item" style="--c:' + pkgColor(ids[i]) + '">'
-          + '<span class="nm"><span class="sw"></span>' + esc(pkgName(ids[i])) + '</span>'
+          + '<span class="nm"><span class="sw"></span>' + (i === 0 ? '🏆 ' : '') + esc(pkgName(ids[i])) + '</span>'
           + '<span class="track"><span class="fill" style="display:block;width:' + w.toFixed(1) + '%"></span></span>'
           + '<span class="val">' + qty + ' 份 · ' + money(qty * price) + '</span></div>';
   }
-  $('pkgRank').innerHTML = html;
+  box.innerHTML = html;
   $('pkgRankTotal').textContent = '共 ' + totalQty + ' 份 · ' + money(totalAmt);
-  wrap.hidden = false;
 }
 
 /* ---------- 大额支出 ---------- */
@@ -829,7 +920,7 @@ function renderRecords(){
   for(var i = 0; i < dates.length; i++){
     var d = dates[i], r = records[d];
     var p = gross(r);
-    var top = topPkg(r);
+    var top = topPkgDate(d);
     var noteText = r.note ? esc(r.note) : '—';
     if(top) noteText = (r.note ? esc(r.note) + ' · ' : '') + '🏆' + esc(top.name) + '×' + top.qty;
     html += '<div class="rec-row">'
@@ -845,50 +936,6 @@ function renderRecords(){
   }
   box.innerHTML = html;
 }
-
-/* ---------- 套餐销量输入 ---------- */
-function renderPkgInputs(){
-  var box = $('pkgArea');
-  var pkgs = settings.packages;
-  if(!pkgs.length){
-    box.innerHTML = '<div class="pkg-hint">📦 还没配置套餐，<button type="button" class="linkbtn" id="goPkg">去「小店设置」添加</button> 后就能按套餐记销量</div>';
-    return;
-  }
-  var html = '<div class="pkg-title">今日套餐销量<b id="pkgTotal">合计 0 份</b></div>';
-  for(var i = 0; i < pkgs.length; i++){
-    var q = int(pkgDraft[pkgs[i].id]);
-    html += '<div class="pkg-row">'
-          + '<span class="pn">' + esc(pkgs[i].name) + '<i>' + money(pkgs[i].price) + '</i></span>'
-          + '<span class="stepper">'
-          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="-1">−</button>'
-          + '<b id="pq_' + pkgs[i].id + '">' + q + '</b>'
-          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="1">＋</button>'
-          + '</span></div>';
-  }
-  box.innerHTML = html;
-  updatePkgTotal();
-}
-function updatePkgTotal(){
-  var t = 0;
-  for(var id in pkgDraft) t += int(pkgDraft[id]);
-  var el = $('pkgTotal');
-  if(el) el.textContent = '合计 ' + t + ' 份';
-}
-$('pkgArea').addEventListener('click', function(e){
-  if(e.target && e.target.id === 'goPkg'){
-    $('settingsWelcome').hidden = true;
-    openSettings();
-    return;
-  }
-  var btn = e.target.closest('.st');
-  if(!btn) return;
-  var id = btn.getAttribute('data-id');
-  var q = Math.max(0, Math.min(999, int(pkgDraft[id]) + int(btn.getAttribute('data-d'))));
-  if(q === 0) delete pkgDraft[id]; else pkgDraft[id] = q;
-  var b = $('pq_' + id);
-  if(b) b.textContent = q;
-  updatePkgTotal();
-});
 
 function renderAll(){
   var a = aggregate(viewMonth);
@@ -914,8 +961,6 @@ function clearForm(keepDate){
   var d = $('fDate').value;
   $('entryForm').reset();
   $('fDate').value = keepDate ? d : todayStr();
-  pkgDraft = {};
-  renderPkgInputs();
   updatePreview();
 }
 function exitEdit(){
@@ -931,13 +976,10 @@ $('entryForm').addEventListener('submit', function(e){
   if(!d){ toast('请选择日期'); return; }
   if(records[d] && editing !== d && !confirm(fmtDate(d) + ' 已有记录，要覆盖它吗？')) return;
   var wasEdit = (editing === d) || !!records[d];
-  var pkOut = {};
-  for(var pid in pkgDraft){ if(int(pkgDraft[pid]) > 0) pkOut[pid] = int(pkgDraft[pid]); }
   records[d] = Object.assign({}, records[d], {
-    revenue:  num($('fRevenue').value),
-    orders:   int($('fOrders').value),
-    note:     $('fNote').value.trim(),
-    packages: pkOut
+    revenue: num($('fRevenue').value),
+    orders:  int($('fOrders').value),
+    note:    $('fNote').value.trim()
   });
   save();
   viewMonth = d.slice(0,7);
@@ -959,8 +1001,6 @@ $('records').addEventListener('click', function(e){
     $('fRevenue').value = r.revenue || '';
     $('fOrders').value = r.orders || '';
     $('fNote').value = r.note || '';
-    pkgDraft = Object.assign({}, r.packages || {});
-    renderPkgInputs();
     editing = d;
     $('saveBtn').textContent = '保存修改';
     $('cancelEdit').hidden = false;
@@ -1065,7 +1105,7 @@ $('pkgAddBtn').addEventListener('click', function(){
   $('pPrice').value = '';
   renderPkgList();
   renderPkgInputs();
-  toast('套餐已添加 ✓ 每日记账里可以记销量啦');
+  toast('套餐已添加 ✓ 可以去「套餐销量」板块记销量啦');
 });
 $('pkgList').addEventListener('click', function(e){
   var btn = e.target.closest('.op.del');
@@ -1073,7 +1113,7 @@ $('pkgList').addEventListener('click', function(e){
   var id = btn.getAttribute('data-id');
   var idx = pkgIndex(id);
   if(idx < 0) return;
-  if(!confirm('删除套餐「' + settings.packages[idx].name + '」？历史流水里的销量会保留')) return;
+  if(!confirm('删除套餐「' + settings.packages[idx].name + '」？历史销量数据会保留')) return;
   settings.packages.splice(idx, 1);
   save();
   renderPkgList();
@@ -1118,7 +1158,7 @@ function applyShopName(){
 
 /* ---------- 导入 / 导出 ---------- */
 $('exportBtn').addEventListener('click', function(){
-  var data = { settings:settings, records:records, expenses:expenses, exportedAt:new Date().toISOString() };
+  var data = { settings:settings, records:records, expenses:expenses, pkgSales:pkgSales, exportedAt:new Date().toISOString() };
   var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1162,6 +1202,14 @@ $('importFile').addEventListener('change', function(){
           }
         }
       }
+      if(data.pkgSales && typeof data.pkgSales === 'object'){
+        for(var pd in data.pkgSales){
+          if(/^\d{4}-\d{2}-\d{2}$/.test(pd) && typeof data.pkgSales[pd] === 'object'){
+            pkgSales[pd] = data.pkgSales[pd];
+          }
+        }
+      }
+      pkgDraft = Object.assign({}, pkgSales[$('pkDate').value] || {});
       save(); applyShopName(); renderAll(); updatePreview();
       toast('已导入 ' + n + ' 条流水、' + m + ' 笔大额支出 ✓');
     }catch(err){
@@ -1185,6 +1233,8 @@ function toast(msg){
 /* ---------- 初始化 ---------- */
 $('fDate').value = todayStr();
 $('eDate').value = todayStr();
+$('pkDate').value = todayStr();
+pkgDraft = Object.assign({}, pkgSales[todayStr()] || {});
 applyShopName();
 renderAll();
 updatePreview();
