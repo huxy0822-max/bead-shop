@@ -160,6 +160,26 @@ input[type=number]{-moz-appearance:textfield}
   box-shadow:0 8px 18px rgba(244,91,143,.35);
 }
 
+/* ---------- 套餐 ---------- */
+.pkg-area{background:#FFFCF8; border:2px solid var(--line); border-radius:14px; padding:10px 14px; margin-bottom:13px}
+.pkg-title{font-size:13px; color:var(--ink-soft); letter-spacing:1px; display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px}
+.pkg-title b{color:var(--pink-deep); font-size:13px; font-variant-numeric:tabular-nums}
+.pkg-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 2px; border-top:1px dashed var(--line)}
+.pkg-row .pn{font-size:13.5px}
+.pkg-row .pn i{font-style:normal; color:var(--ink-faint); font-size:12px; margin-left:6px}
+.stepper{display:flex; align-items:center; gap:10px}
+.stepper .st{
+  width:28px; height:28px; border-radius:50%; border:2px solid var(--line); background:#fff;
+  color:var(--pink-deep); font-size:16px; font-weight:700; cursor:pointer; line-height:1;
+  transition:all .12s ease; font-family:inherit;
+}
+.stepper .st:hover{border-color:var(--pink); transform:scale(1.08)}
+.stepper b{min-width:22px; text-align:center; font-size:15px; font-variant-numeric:tabular-nums}
+.pkg-hint{font-size:12.5px; color:var(--ink-soft); padding:4px 2px; line-height:1.8}
+.pkgl-row{display:grid; grid-template-columns:1fr auto 56px; gap:8px; align-items:center; padding:8px 10px; border-radius:12px; font-size:13.5px}
+.pkgl-row:hover{background:#FFF7EE}
+.pkgl-row .pp{color:var(--ink-soft); font-variant-numeric:tabular-nums}
+
 /* ---------- 折线图 ---------- */
 .legend{display:flex; gap:16px; font-size:12px; color:var(--ink-soft); margin-bottom:10px; flex-wrap:wrap}
 .legend i{display:inline-block; width:14px; height:0; border-top:3px solid; border-radius:2px; margin-right:6px; vertical-align:3px}
@@ -194,15 +214,15 @@ input[type=number]{-moz-appearance:textfield}
 }
 .divider{height:2px; background:#F8ECDD; border-radius:2px; margin:16px 0}
 .sec-title{font-size:13px; color:var(--ink-soft); letter-spacing:1.5px; margin-bottom:10px; display:flex; align-items:baseline; gap:8px}
-.sec-title b{margin-left:auto; color:var(--ink); font-size:15px; font-variant-numeric:tabular-nums}
+.sec-title b{margin-left:auto; color:var(--ink); font-size:14px; font-variant-numeric:tabular-nums}
 
-/* ---------- 支出构成 + 回本 ---------- */
-.cost-item{display:grid; grid-template-columns:96px 1fr 96px; gap:12px; align-items:center; padding:6px 0}
-.cost-item .nm{font-size:13.5px; display:flex; align-items:center; gap:7px}
+/* ---------- 条形排行 + 回本 ---------- */
+.cost-item{display:grid; grid-template-columns:96px 1fr 128px; gap:12px; align-items:center; padding:6px 0}
+.cost-item .nm{font-size:13.5px; display:flex; align-items:center; gap:7px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
 .cost-item .sw{width:10px; height:10px; border-radius:3px; flex:none; background:var(--c); box-shadow:inset -1px -2px 0 rgba(0,0,0,.08)}
 .cost-item .track{height:13px; background:#FBEFE2; border-radius:999px; overflow:hidden}
 .cost-item .fill{height:100%; border-radius:999px; background:var(--c); transition:width .4s ease}
-.cost-item .val{text-align:right; font-size:13.5px; font-variant-numeric:tabular-nums; color:var(--ink)}
+.cost-item .val{text-align:right; font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink)}
 .payback{margin-top:14px; background:#FFF7EE; border:2px dashed #F5D9B8; border-radius:16px; padding:14px 16px}
 .payback .pb-head{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--ink-soft); letter-spacing:1px}
 .payback .pb-head b{font-size:17px; color:var(--pink-deep); font-variant-numeric:tabular-nums}
@@ -242,7 +262,7 @@ input[type=number]{-moz-appearance:textfield}
   backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px;
 }
 [hidden]{display:none !important}
-.modal{background:#fff; border-radius:26px; padding:28px; width:min(440px,94vw); box-shadow:0 24px 60px rgba(74,59,54,.25); animation:rise .3s ease both}
+.modal{background:#fff; border-radius:26px; padding:28px; width:min(440px,94vw); box-shadow:0 24px 60px rgba(74,59,54,.25); animation:rise .3s ease both; max-height:88vh; overflow-y:auto}
 .modal h2{font-size:19px; letter-spacing:1.5px; margin-bottom:18px; display:flex; align-items:center; gap:9px}
 .hint{font-size:12.5px; color:var(--ink-soft); line-height:1.8; background:#FFF7EE; border-radius:12px; padding:10px 14px; margin-bottom:14px}
 
@@ -260,7 +280,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 @media (max-width:1020px){
   .stats{grid-template-columns:1fr 1fr}
   .grid,.grid2{grid-template-columns:1fr}
-  .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr 1fr 1.1fr 76px}
+  .rec-head,.rec-row{grid-template-columns:1.1fr .9fr .45fr 1fr 1fr 76px}
   .rec-head span:nth-child(4),.rec-row span:nth-child(4){display:none}
 }
 @media (max-width:560px){
@@ -268,8 +288,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
   .month-title{font-size:19px}
   .stats{grid-template-columns:1fr 1fr; gap:10px}
   .stat strong{font-size:20px}
-  .rec-head,.rec-row{grid-template-columns:1.2fr 1fr 1fr 72px; font-size:12.5px}
-  .rec-head span:nth-child(3),.rec-row span:nth-child(3),
+  .rec-head,.rec-row{grid-template-columns:1.15fr .9fr .45fr .95fr 72px; font-size:12.5px}
   .rec-head span:nth-child(6),.rec-row span:nth-child(6){display:none}
   .exp-head,.exp-row{grid-template-columns:66px 1fr auto 80px 60px; font-size:12.5px}
 }
@@ -355,6 +374,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
         <label class="field"><span>营业额（元）</span>
           <input type="number" id="fRevenue" min="0" step="0.01" inputmode="decimal" placeholder="今天收入了多少？" required>
         </label>
+        <div class="pkg-area" id="pkgArea"></div>
         <label class="field"><span>今日备注（选填）</span>
           <input type="text" id="fNote" maxlength="30" placeholder="如：周末亲子体验活动，客流不错">
         </label>
@@ -376,6 +396,11 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
       <div class="chart-wrap">
         <svg class="linechart" id="linechart" viewBox="0 0 660 240" role="img" aria-label="收入与毛利趋势图"></svg>
         <div class="chart-empty" id="chartEmpty" hidden>这个月还没有记录，先记一笔吧～</div>
+      </div>
+      <div id="pkgRankWrap" hidden>
+        <div class="divider"></div>
+        <div class="sec-title">本月套餐销量榜<b id="pkgRankTotal"></b></div>
+        <div id="pkgRank"></div>
       </div>
     </section>
   </div>
@@ -460,7 +485,22 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
           <input type="number" id="sProp" min="0" step="0.01" inputmode="decimal" placeholder="如 500">
         </label>
       </div>
-      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业，月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）</p>
+
+      <div class="divider"></div>
+      <div class="sec-title">套餐管理（选填）<b id="pkgCount"></b></div>
+      <div id="pkgList"></div>
+      <div class="two">
+        <label class="field"><span>套餐名称</span>
+          <input type="text" id="pName" maxlength="12" placeholder="如：双人拼豆体验">
+        </label>
+        <label class="field"><span>价格（元）</span>
+          <input type="number" id="pPrice" min="0" step="0.01" inputmode="decimal" placeholder="如 99">
+        </label>
+      </div>
+      <button type="button" class="btn ghost wide" id="pkgAddBtn">＋ 添加套餐（立即生效）</button>
+
+      <div class="divider"></div>
+      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业，月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）<br>· 套餐添加后立即生效，每日记账里可按套餐记销量，自动生成销量榜</p>
       <button type="submit" class="btn save">保存设置</button>
     </form>
   </div>
@@ -519,13 +559,16 @@ function catColor(c){
   for(var i = 0; i < CATS.length; i++) if(CATS[i].name === c) return CATS[i].color;
   return '#C0AEA2';
 }
+var PKG_COLORS = ['#FF7BA9','#6FC7EA','#FFB35C','#B9A7F9','#3ECF9A','#FFD166'];
 
-var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, parking:0, property:0, decoration:0, decoMonths:36 };
+var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, parking:0, property:0, decoration:0, decoMonths:36, packages:[] };
+if(!Array.isArray(settings.packages)) settings.packages = [];
 var records  = load(LS_REC)  || {};
 var expenses = load(LS_EXP)  || [];
 var editing  = null;
 var expEditing = null;
 var viewMonth = todayStr().slice(0,7);
+var pkgDraft = {};   /* 表单里各套餐当前份数 */
 
 function save(){
   localStorage.setItem(LS_SET, JSON.stringify(settings));
@@ -544,6 +587,25 @@ if(num(settings.decoration) > 0){
 
 function dailyFixed(){ return (num(settings.rent) + num(settings.utilities) + num(settings.parking) + num(settings.property)) / 30; }
 function gross(r){ return num(r.revenue) - dailyFixed(); }   /* 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业） */
+
+/* ---------- 套餐工具 ---------- */
+function pkgIndex(id){
+  for(var i = 0; i < settings.packages.length; i++)
+    if(String(settings.packages[i].id) === String(id)) return i;
+  return -1;
+}
+function pkgName(id){ var i = pkgIndex(id); return i >= 0 ? settings.packages[i].name : '（已删除套餐）'; }
+function pkgPrice(id){ var i = pkgIndex(id); return i >= 0 ? num(settings.packages[i].price) : 0; }
+function pkgColor(id){ var i = pkgIndex(id); return i >= 0 ? PKG_COLORS[i % PKG_COLORS.length] : '#C0AEA2'; }
+function topPkg(r){
+  if(!r || !r.packages) return null;
+  var best = null;
+  for(var id in r.packages){
+    var q = int(r.packages[id]);
+    if(q > 0 && (!best || q > best.qty)) best = { name:pkgName(id), qty:q };
+  }
+  return best;
+}
 
 /* ---------- 汇总 ---------- */
 function aggregate(mk){
@@ -654,13 +716,44 @@ function renderChart(){
   for(i = 0; i < n; i++){
     var d = dates[i]; r = records[d];
     var p = gross(r);
-    var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n毛利 ' + (p >= 0 ? '+' : '') + money(p) + (r.note ? '\n备注：' + r.note : '');
+    var tip = fmtDate(d) + '\n营业额 ' + money(r.revenue) + '\n毛利 ' + (p >= 0 ? '+' : '') + money(p);
+    var top = topPkg(r);
+    if(top) tip += '\n销冠：' + top.name + ' ×' + top.qty;
+    if(r.note) tip += '\n备注：' + r.note;
     s += '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="4.2" fill="#F45B8F" stroke="#fff" stroke-width="2"/>'
        + '<circle cx="' + proPts[i][0] + '" cy="' + proPts[i][1] + '" r="3.6" fill="#8A6D5C" stroke="#fff" stroke-width="2"/>'
        + '<circle cx="' + revPts[i][0] + '" cy="' + revPts[i][1] + '" r="12" fill="transparent"><title>' + esc(tip) + '</title></circle>'
        + '<text x="' + x(i) + '" y="' + (H-8) + '" text-anchor="middle">' + parseInt(d.slice(8,10), 10) + '日</text>';
   }
   svg.innerHTML = s;
+}
+
+/* ---------- 套餐销量榜 ---------- */
+function renderPkgRank(){
+  var wrap = $('pkgRankWrap');
+  var sums = {}, d, id;
+  for(d in records){
+    if(d.slice(0,7) !== viewMonth) continue;
+    var pk = records[d].packages;
+    if(!pk) continue;
+    for(id in pk) sums[id] = (sums[id] || 0) + int(pk[id]);
+  }
+  var ids = Object.keys(sums).filter(function(i){ return sums[i] > 0; });
+  if(!ids.length){ wrap.hidden = true; return; }
+  ids.sort(function(x, y){ return sums[y] - sums[x]; });
+  var max = sums[ids[0]], totalQty = 0, totalAmt = 0, html = '';
+  for(var i = 0; i < ids.length; i++){
+    var qty = sums[ids[i]], price = pkgPrice(ids[i]);
+    totalQty += qty; totalAmt += qty * price;
+    var w = Math.max(qty / max * 100, 2);
+    html += '<div class="cost-item" style="--c:' + pkgColor(ids[i]) + '">'
+          + '<span class="nm"><span class="sw"></span>' + esc(pkgName(ids[i])) + '</span>'
+          + '<span class="track"><span class="fill" style="display:block;width:' + w.toFixed(1) + '%"></span></span>'
+          + '<span class="val">' + qty + ' 份 · ' + money(qty * price) + '</span></div>';
+  }
+  $('pkgRank').innerHTML = html;
+  $('pkgRankTotal').textContent = '共 ' + totalQty + ' 份 · ' + money(totalAmt);
+  wrap.hidden = false;
 }
 
 /* ---------- 大额支出 ---------- */
@@ -736,13 +829,16 @@ function renderRecords(){
   for(var i = 0; i < dates.length; i++){
     var d = dates[i], r = records[d];
     var p = gross(r);
+    var top = topPkg(r);
+    var noteText = r.note ? esc(r.note) : '—';
+    if(top) noteText = (r.note ? esc(r.note) + ' · ' : '') + '🏆' + esc(top.name) + '×' + top.qty;
     html += '<div class="rec-row">'
       + '<span class="d">' + fmtDate(d) + '</span>'
       + '<span>' + money(r.revenue) + '</span>'
       + '<span>' + int(r.orders) + '</span>'
       + '<span>' + money(dailyFixed()) + '</span>'
       + '<span class="p ' + (p >= 0 ? 'pos' : 'neg') + '">' + (p >= 0 ? '+' : '') + money(p) + '</span>'
-      + '<span class="note" title="' + esc(r.note || '') + '">' + (r.note ? esc(r.note) : '—') + '</span>'
+      + '<span class="note" title="' + esc(r.note || '') + '">' + noteText + '</span>'
       + '<span class="ops"><button class="op" data-act="edit" data-date="' + d + '">编辑</button>'
       + '<button class="op del" data-act="del" data-date="' + d + '">删除</button></span>'
       + '</div>';
@@ -750,14 +846,60 @@ function renderRecords(){
   box.innerHTML = html;
 }
 
+/* ---------- 套餐销量输入 ---------- */
+function renderPkgInputs(){
+  var box = $('pkgArea');
+  var pkgs = settings.packages;
+  if(!pkgs.length){
+    box.innerHTML = '<div class="pkg-hint">📦 还没配置套餐，<button type="button" class="linkbtn" id="goPkg">去「小店设置」添加</button> 后就能按套餐记销量</div>';
+    return;
+  }
+  var html = '<div class="pkg-title">今日套餐销量<b id="pkgTotal">合计 0 份</b></div>';
+  for(var i = 0; i < pkgs.length; i++){
+    var q = int(pkgDraft[pkgs[i].id]);
+    html += '<div class="pkg-row">'
+          + '<span class="pn">' + esc(pkgs[i].name) + '<i>' + money(pkgs[i].price) + '</i></span>'
+          + '<span class="stepper">'
+          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="-1">−</button>'
+          + '<b id="pq_' + pkgs[i].id + '">' + q + '</b>'
+          + '<button type="button" class="st" data-id="' + pkgs[i].id + '" data-d="1">＋</button>'
+          + '</span></div>';
+  }
+  box.innerHTML = html;
+  updatePkgTotal();
+}
+function updatePkgTotal(){
+  var t = 0;
+  for(var id in pkgDraft) t += int(pkgDraft[id]);
+  var el = $('pkgTotal');
+  if(el) el.textContent = '合计 ' + t + ' 份';
+}
+$('pkgArea').addEventListener('click', function(e){
+  if(e.target && e.target.id === 'goPkg'){
+    $('settingsWelcome').hidden = true;
+    openSettings();
+    return;
+  }
+  var btn = e.target.closest('.st');
+  if(!btn) return;
+  var id = btn.getAttribute('data-id');
+  var q = Math.max(0, Math.min(999, int(pkgDraft[id]) + int(btn.getAttribute('data-d'))));
+  if(q === 0) delete pkgDraft[id]; else pkgDraft[id] = q;
+  var b = $('pq_' + id);
+  if(b) b.textContent = q;
+  updatePkgTotal();
+});
+
 function renderAll(){
   var a = aggregate(viewMonth);
   renderMonthBar(a);
   renderStats(a);
   renderChart();
+  renderPkgRank();
   renderExpenses();
   renderCosts(a);
   renderRecords();
+  renderPkgInputs();
 }
 
 /* ---------- 每日记账表单 ---------- */
@@ -772,6 +914,8 @@ function clearForm(keepDate){
   var d = $('fDate').value;
   $('entryForm').reset();
   $('fDate').value = keepDate ? d : todayStr();
+  pkgDraft = {};
+  renderPkgInputs();
   updatePreview();
 }
 function exitEdit(){
@@ -787,10 +931,13 @@ $('entryForm').addEventListener('submit', function(e){
   if(!d){ toast('请选择日期'); return; }
   if(records[d] && editing !== d && !confirm(fmtDate(d) + ' 已有记录，要覆盖它吗？')) return;
   var wasEdit = (editing === d) || !!records[d];
+  var pkOut = {};
+  for(var pid in pkgDraft){ if(int(pkgDraft[pid]) > 0) pkOut[pid] = int(pkgDraft[pid]); }
   records[d] = Object.assign({}, records[d], {
-    revenue: num($('fRevenue').value),
-    orders:  int($('fOrders').value),
-    note:    $('fNote').value.trim()
+    revenue:  num($('fRevenue').value),
+    orders:   int($('fOrders').value),
+    note:     $('fNote').value.trim(),
+    packages: pkOut
   });
   save();
   viewMonth = d.slice(0,7);
@@ -812,6 +959,8 @@ $('records').addEventListener('click', function(e){
     $('fRevenue').value = r.revenue || '';
     $('fOrders').value = r.orders || '';
     $('fNote').value = r.note || '';
+    pkgDraft = Object.assign({}, r.packages || {});
+    renderPkgInputs();
     editing = d;
     $('saveBtn').textContent = '保存修改';
     $('cancelEdit').hidden = false;
@@ -889,13 +1038,57 @@ $('expList').addEventListener('click', function(e){
   }
 });
 
-/* ---------- 设置 ---------- */
+/* ---------- 设置 + 套餐管理 ---------- */
+function renderPkgList(){
+  var box = $('pkgList');
+  var pkgs = settings.packages;
+  $('pkgCount').textContent = pkgs.length ? '共 ' + pkgs.length + ' 个' : '';
+  if(!pkgs.length){
+    box.innerHTML = '<div class="pkg-hint">还没有套餐，在下面添加你的第一个套餐吧～</div>';
+    return;
+  }
+  var html = '';
+  for(var i = 0; i < pkgs.length; i++){
+    html += '<div class="pkgl-row"><span><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:' + PKG_COLORS[i % PKG_COLORS.length] + ';margin-right:7px"></span>' + esc(pkgs[i].name) + '</span>'
+          + '<span class="pp">' + money(pkgs[i].price) + '</span>'
+          + '<button type="button" class="op del" data-id="' + pkgs[i].id + '">删除</button></div>';
+  }
+  box.innerHTML = html;
+}
+$('pkgAddBtn').addEventListener('click', function(){
+  var name = $('pName').value.trim();
+  var price = num($('pPrice').value);
+  if(!name){ toast('先给套餐起个名字'); return; }
+  settings.packages.push({ id:'p' + Date.now() + Math.floor(Math.random()*1000), name:name, price:price });
+  save();
+  $('pName').value = '';
+  $('pPrice').value = '';
+  renderPkgList();
+  renderPkgInputs();
+  toast('套餐已添加 ✓ 每日记账里可以记销量啦');
+});
+$('pkgList').addEventListener('click', function(e){
+  var btn = e.target.closest('.op.del');
+  if(!btn) return;
+  var id = btn.getAttribute('data-id');
+  var idx = pkgIndex(id);
+  if(idx < 0) return;
+  if(!confirm('删除套餐「' + settings.packages[idx].name + '」？历史流水里的销量会保留')) return;
+  settings.packages.splice(idx, 1);
+  save();
+  renderPkgList();
+  renderPkgInputs();
+  renderPkgRank();
+  toast('已删除套餐');
+});
+
 function openSettings(){
   $('sName').value = settings.shopName || '';
   $('sRent').value = settings.rent || '';
   $('sUtil').value = settings.utilities || '';
   $('sPark').value = settings.parking || '';
   $('sProp').value = settings.property || '';
+  renderPkgList();
   $('settingsModal').hidden = false;
 }
 $('settingsBtn').addEventListener('click', function(){
@@ -945,6 +1138,7 @@ $('importFile').addEventListener('change', function(){
       if(data.settings && typeof data.settings === 'object'){
         for(var k in data.settings) settings[k] = data.settings[k];
       }
+      if(!Array.isArray(settings.packages)) settings.packages = [];
       var n = 0;
       if(data.records && typeof data.records === 'object'){
         for(var d in data.records){
