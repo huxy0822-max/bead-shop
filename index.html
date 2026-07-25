@@ -280,6 +280,16 @@ input[type=number]{-moz-appearance:textfield}
 
 footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacing:1px; margin-top:34px; line-height:2}
 
+/* ---------- 云同步状态标 ---------- */
+.sync-badge{
+  font-size:12px; font-weight:700; letter-spacing:1px; padding:8px 14px;
+  border-radius:999px; background:#fff; border:2px solid var(--line);
+  color:var(--ink-soft); white-space:nowrap; align-self:center;
+}
+.sync-badge.ok{color:var(--green); border-color:#BFE9D4; background:#F2FCF7}
+.sync-badge.busy{color:#C77B3F; border-color:#F5D9B8; background:#FFF8EF}
+.sync-badge.warn{color:var(--red); border-color:#FFD6DE; background:#FFF5F6}
+
 @media (max-width:1020px){
   .stats{grid-template-columns:1fr 1fr}
   .grid,.grid2{grid-template-columns:1fr}
@@ -321,6 +331,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
       </div>
     </div>
     <div class="header-actions">
+      <span class="sync-badge busy" id="syncBadge">连接云端…</span>
       <button class="btn ghost" id="exportBtn">导出数据</button>
       <button class="btn ghost" id="importBtn">导入数据</button>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
@@ -473,7 +484,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 
   <footer>
     用 ❤ 和拼豆一颗一颗拼出来的看板<br>
-    数据只保存在这台设备的浏览器里，记得定期「导出数据」备份哦
+    数据云端同步，多设备打开都是同一份账 · 定期「导出数据」备份更安心
   </footer>
 </div>
 
@@ -587,11 +598,109 @@ var expEditing = null;
 var viewMonth = todayStr().slice(0,7);
 var pkgDraft = {};   /* 套餐板块里各套餐当前份数 */
 
+/* ---------- 存储：本地缓存 + 云端同步（kvdb.io 分片） ---------- */
+var CLOUD = { base:'https://kvdb.io/GgPFy6XfJmMVoBWtzjmBKi' };
+var cloudReady = false, syncTimer = null, shardCache = {};
+
+function setBadge(txt, cls){ var b = $('syncBadge'); b.textContent = txt; b.className = 'sync-badge ' + cls; }
+function nowTime(){ var d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+
 function save(){
   localStorage.setItem(LS_SET, JSON.stringify(settings));
   localStorage.setItem(LS_REC, JSON.stringify(records));
   localStorage.setItem(LS_EXP, JSON.stringify(expenses));
   localStorage.setItem(LS_PKG, JSON.stringify(pkgSales));
+  queueSync();
+}
+function queueSync(){
+  if(!cloudReady) return;
+  setBadge('云同步中…', 'busy');
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushChanges, 800);
+}
+
+/* 数据按月分片，避开单 key 16KB 上限，也让每次同步只写变化的分片 */
+function computeShards(){
+  var shards = { 's1_settings':settings, 's2_expenses':expenses }, d, mk;
+  for(d in records){ mk = d.slice(0,7); (shards['r_'+mk] = shards['r_'+mk] || {})[d] = records[d]; }
+  for(d in pkgSales){ mk = d.slice(0,7); (shards['p_'+mk] = shards['p_'+mk] || {})[d] = pkgSales[d]; }
+  return shards;
+}
+function cloudWrite(key, obj){
+  return fetch(CLOUD.base + '/' + key, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(obj) })
+    .then(function(r){ if(!r.ok) throw new Error('w' + r.status); });
+}
+function cloudDel(key){
+  return fetch(CLOUD.base + '/' + key, { method:'DELETE' })
+    .then(function(r){ if(!r.ok && r.status !== 404) throw new Error('d' + r.status); });
+}
+function pushChanges(){
+  var shards = computeShards(), jobs = [], seen = {}, pending = [], k, ser;
+  for(k in shards){
+    seen[k] = true;
+    ser = JSON.stringify(shards[k]);
+    if(shardCache[k] === ser) continue;
+    pending.push([k, ser]);
+    jobs.push(cloudWrite(k, { ts:Date.now(), data:shards[k] }));
+  }
+  var dels = [];
+  for(var old in shardCache){
+    if(!seen[old]){ dels.push(old); jobs.push(cloudDel(old)); }
+  }
+  if(!jobs.length){ setBadge('云端已同步 ' + nowTime(), 'ok'); return Promise.resolve(); }
+  setBadge('云同步中…', 'busy');
+  return Promise.all(jobs).then(function(){
+    pending.forEach(function(p){ shardCache[p[0]] = p[1]; });
+    dels.forEach(function(k2){ delete shardCache[k2]; });
+    setBadge('云端已同步 ' + nowTime(), 'ok');
+  }).catch(function(){
+    setBadge('同步失败·已存本地，稍后自动重试', 'warn');
+    setTimeout(queueSync, 15000);
+  });
+}
+function cloudLoad(){
+  setBadge('连接云端…', 'busy');
+  return fetch(CLOUD.base + '/?prefix=&ts=' + Date.now(), { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error('l' + r.status); return r.text(); })
+    .then(function(txt){
+      var keys = txt.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+      if(!keys.length) return {};
+      return Promise.all(keys.map(function(k){
+        return fetch(CLOUD.base + '/' + k + '?ts=' + Date.now(), { cache:'no-store' })
+          .then(function(r){ return r.ok ? r.json() : null; })
+          .then(function(v){ return [k, v]; })
+          .catch(function(){ return [k, null]; });
+      })).then(function(pairs){
+        var out = {};
+        pairs.forEach(function(p){ if(p[1] && typeof p[1] === 'object') out[p[0]] = p[1]; });
+        return out;
+      });
+    });
+}
+function applyCloud(shards){
+  var s = shards['s1_settings'];
+  if(s && s.data && typeof s.data === 'object'){
+    settings = Object.assign({ shopName:'豆豆拼豆小铺', rent:0, utilities:0, parking:0, property:0, decoration:0, decoMonths:36, packages:[] }, s.data);
+  }
+  if(!Array.isArray(settings.packages)) settings.packages = [];
+  var e = shards['s2_expenses'];
+  expenses = (e && Array.isArray(e.data)) ? e.data : [];
+  records = {}; pkgSales = {};
+  for(var k in shards){
+    if(k.slice(0,2) === 'r_' && shards[k].data) Object.assign(records, shards[k].data);
+    if(k.slice(0,2) === 'p_' && shards[k].data) Object.assign(pkgSales, shards[k].data);
+  }
+  shardCache = {};
+  var cur = computeShards();
+  for(var k2 in cur) shardCache[k2] = JSON.stringify(cur[k2]);
+  localStorage.setItem(LS_SET, JSON.stringify(settings));
+  localStorage.setItem(LS_REC, JSON.stringify(records));
+  localStorage.setItem(LS_EXP, JSON.stringify(expenses));
+  localStorage.setItem(LS_PKG, JSON.stringify(pkgSales));
+  pkgDraft = Object.assign({}, pkgSales[$('pkDate').value] || {});
+  applyShopName();
+  renderAll();
+  updatePreview();
 }
 
 /* 旧版本迁移 1：设置里的「装修总成本」自动转成一笔大额支出 */
@@ -1230,7 +1339,7 @@ function toast(msg){
   toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
 }
 
-/* ---------- 初始化 ---------- */
+/* ---------- 初始化：先画本地缓存，再连云端 ---------- */
 $('fDate').value = todayStr();
 $('eDate').value = todayStr();
 $('pkDate').value = todayStr();
@@ -1238,10 +1347,33 @@ pkgDraft = Object.assign({}, pkgSales[todayStr()] || {});
 applyShopName();
 renderAll();
 updatePreview();
-if(!localStorage.getItem(LS_SET)){
-  $('settingsWelcome').hidden = false;
-  openSettings();
-}
+window.addEventListener('online', function(){ queueSync(); });
+
+cloudLoad().then(function(shards){
+  if(Object.keys(shards).length){
+    applyCloud(shards);
+    cloudReady = true;
+    setBadge('云端已同步 ' + nowTime(), 'ok');
+  }else{
+    cloudReady = true;
+    if(Object.keys(records).length || expenses.length || localStorage.getItem(LS_SET)){
+      pushChanges();   /* 首次上云：把本机已有数据传上去 */
+    }else{
+      setBadge('已连接云端', 'ok');
+    }
+    if(!localStorage.getItem(LS_SET)){
+      $('settingsWelcome').hidden = false;
+      openSettings();
+    }
+  }
+}).catch(function(){
+  cloudReady = true;
+  setBadge('离线·数据保存在本机，联网后自动同步', 'warn');
+  if(!localStorage.getItem(LS_SET)){
+    $('settingsWelcome').hidden = false;
+    openSettings();
+  }
+});
 })();
 </script>
 </body>
