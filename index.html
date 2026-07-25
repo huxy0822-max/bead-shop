@@ -259,6 +259,42 @@ input[type=number]{-moz-appearance:textfield}
 .op.del:hover{background:#FFD6DE}
 .empty{text-align:center; padding:36px 0; color:var(--ink-soft); font-size:14.5px; letter-spacing:1px; line-height:2}
 
+/* ---------- 账目明细二级页 ---------- */
+.detail-page{position:fixed; inset:0; z-index:80; background:var(--bg); display:flex; flex-direction:column; animation:rise .25s ease both}
+.detail-page::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(#F1DEC8 1.6px, transparent 1.7px);
+  background-size:26px 26px; opacity:.6;
+}
+.dp-head{position:relative; display:flex; align-items:center; gap:12px; padding:16px 18px 10px; flex-wrap:wrap}
+.dp-back{border:none; background:#fff; border:2px solid var(--line); color:var(--ink); font-size:14px; font-weight:700; padding:8px 16px; border-radius:999px; cursor:pointer; font-family:inherit; letter-spacing:1px}
+.dp-back:hover{border-color:var(--pink); color:var(--pink-deep)}
+.dp-title{font-size:19px; letter-spacing:2px; font-weight:700}
+.dp-month{margin-left:auto; padding:8px 12px; border-radius:12px; border:2px solid var(--line); background:#fff; font-family:inherit; font-size:13px; color:var(--ink); outline:none}
+.dp-tabs{position:relative; display:flex; gap:8px; padding:4px 18px 12px; flex-wrap:wrap}
+.dp-tab{border:none; background:#fff; border:2px solid var(--line); color:var(--ink-soft); font-size:13.5px; font-weight:700; padding:8px 18px; border-radius:999px; cursor:pointer; font-family:inherit; letter-spacing:1px}
+.dp-tab.active{background:linear-gradient(135deg,var(--pink),var(--orange)); color:#fff; border-color:transparent; box-shadow:0 4px 10px rgba(244,91,143,.3)}
+.dp-body{position:relative; flex:1; overflow-y:auto; padding:0 18px 16px}
+.dp-total{position:relative; padding:12px 18px; background:#fff; border-top:2px solid var(--line); font-size:13.5px; display:flex; gap:18px; flex-wrap:wrap; box-shadow:0 -6px 16px rgba(190,140,90,.08)}
+.dp-total b{font-variant-numeric:tabular-nums}
+table.dp{width:100%; border-collapse:collapse; font-size:13.5px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 8px 18px rgba(190,140,90,.10)}
+table.dp th{position:sticky; top:0; background:#FFF3E4; color:var(--ink-soft); font-size:12px; letter-spacing:1px; text-align:left; padding:10px 12px; z-index:1; white-space:nowrap}
+table.dp td{padding:10px 12px; border-top:1px dashed #F6E9DA; white-space:nowrap; font-variant-numeric:tabular-nums}
+table.dp tr:nth-child(even) td{background:#FFFCF8}
+table.dp td.r, table.dp th.r{text-align:right}
+table.dp td.muted{color:var(--ink-soft)}
+table.dp tr.grp td{background:#F9EDDB; color:#8A6D5C; font-weight:700; font-size:12.5px; letter-spacing:1px}
+.dp-empty{text-align:center; padding:60px 0; color:var(--ink-soft); font-size:14.5px; letter-spacing:1px; line-height:2}
+.dp-entry{
+  width:100%; margin-top:16px; background:#fff; border:none; border-radius:20px;
+  padding:18px 22px; box-shadow:0 10px 24px rgba(190,140,90,.12);
+  font-family:inherit; font-size:15.5px; font-weight:700; letter-spacing:1.5px; color:var(--ink);
+  cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+  transition:transform .15s ease; animation:rise .5s ease both;
+}
+.dp-entry:hover{transform:translateY(-2px)}
+.dp-entry span{color:var(--pink-deep); font-size:18px}
+
 /* ---------- 弹窗 ---------- */
 .modal-mask{
   position:fixed; inset:0; z-index:50; background:rgba(74,59,54,.38);
@@ -434,7 +470,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 
   <div class="grid2">
     <section class="card" id="expCard">
-      <h2><span class="dot" style="--c:#FFB35C"></span>大额支出<span class="more">装修、补货等一次支出，可用很久</span></h2>
+      <h2><span class="dot" style="--c:#FFB35C"></span>大额支出<span class="more">装修、补货等一次支出，可用很久</span><button class="linkbtn" id="goDetailExp">明细 ›</button></h2>
       <form id="expForm" autocomplete="off">
         <div class="two">
           <label class="field"><span>支出名称</span>
@@ -477,15 +513,32 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
     </section>
 
     <section class="card">
-      <h2><span class="dot" style="--c:#B9A7F9"></span>每日流水<span class="more" id="recMore">本月已记录 0 天</span></h2>
+      <h2><span class="dot" style="--c:#B9A7F9"></span>每日流水<span class="more" id="recMore">本月已记录 0 天</span><button class="linkbtn" id="goDetailRec">明细 ›</button></h2>
       <div id="records"></div>
     </section>
   </div>
+
+  <button class="dp-entry" id="goDetailAll">📒 查看全部账目明细<span>›</span></button>
 
   <footer>
     用 ❤ 和拼豆一颗一颗拼出来的看板<br>
     数据云端同步，多设备打开都是同一份账 · 定期「导出数据」备份更安心
   </footer>
+</div>
+
+<div class="detail-page" id="detailPage" hidden>
+  <div class="dp-head">
+    <button class="dp-back" id="dpBack">‹ 返回</button>
+    <div class="dp-title">账目明细</div>
+    <select class="dp-month" id="dpMonth"></select>
+  </div>
+  <div class="dp-tabs">
+    <button class="dp-tab active" data-tab="rec">每日流水</button>
+    <button class="dp-tab" data-tab="exp">大额支出</button>
+    <button class="dp-tab" data-tab="pkg">套餐销量</button>
+  </div>
+  <div class="dp-body" id="dpBody"></div>
+  <div class="dp-total" id="dpTotal"></div>
 </div>
 
 <div class="modal-mask" id="settingsModal" hidden>
@@ -1311,6 +1364,146 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
 }
+
+/* ---------- 账目明细二级页 ---------- */
+var dpTab = 'rec', dpMonthSel = 'all';
+function openDetail(tab){
+  dpTab = tab || 'rec';
+  buildDpMonths();
+  renderDetail();
+  $('detailPage').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail(){
+  $('detailPage').hidden = true;
+  document.body.style.overflow = '';
+}
+function buildDpMonths(){
+  var months = {}, d, i, j;
+  for(d in records) months[d.slice(0,7)] = 1;
+  for(d in pkgSales) months[d.slice(0,7)] = 1;
+  for(i = 0; i < expenses.length; i++){ if(expenses[i].date) months[expenses[i].date.slice(0,7)] = 1; }
+  if(dpMonthSel !== 'all' && !months[dpMonthSel]) dpMonthSel = 'all';
+  var list = Object.keys(months).sort().reverse();
+  var html = '<option value="all">全部月份</option>';
+  for(j = 0; j < list.length; j++)
+    html += '<option value="' + list[j] + '"' + (dpMonthSel === list[j] ? ' selected' : '') + '>' + monthLabel(list[j]) + '</option>';
+  $('dpMonth').innerHTML = html;
+}
+function dpInMonth(d){ return dpMonthSel === 'all' || d.slice(0,7) === dpMonthSel; }
+function renderDetail(){
+  var tabs = document.querySelectorAll('.dp-tab');
+  for(var i = 0; i < tabs.length; i++)
+    tabs[i].className = 'dp-tab' + (tabs[i].getAttribute('data-tab') === dpTab ? ' active' : '');
+  if(dpTab === 'exp') renderDpExp();
+  else if(dpTab === 'pkg') renderDpPkg();
+  else renderDpRec();
+}
+function renderDpRec(){
+  var dates = Object.keys(records).filter(dpInMonth).sort().reverse();
+  if(!dates.length){
+    $('dpBody').innerHTML = '<div class="dp-empty">🫘 这个范围还没有流水记录</div>';
+    $('dpTotal').innerHTML = '';
+    return;
+  }
+  var html = '<table class="dp"><thead><tr><th>日期</th><th class="r">营业额</th><th class="r">订单</th><th class="r">固定分摊</th><th class="r">毛利</th><th>备注</th></tr></thead><tbody>';
+  var curM = '', tRev = 0, tOrd = 0, tGross = 0;
+  for(var i = 0; i < dates.length; i++){
+    var d = dates[i], r = records[d], g = gross(r), m = d.slice(0,7);
+    if(m !== curM){
+      curM = m;
+      var ms = { rev:0, g:0, days:0 };
+      for(var x in records) if(x.slice(0,7) === m){ ms.rev += num(records[x].revenue); ms.g += gross(records[x]); ms.days++; }
+      html += '<tr class="grp"><td colspan="6">' + monthLabel(m) + ' · ' + ms.days + ' 天 · 营业额 ' + money(ms.rev) + ' · 毛利 ' + (ms.g >= 0 ? '+' : '') + money(ms.g) + '</td></tr>';
+    }
+    var top = topPkgDate(d);
+    var noteText = r.note ? esc(r.note) : '—';
+    if(top) noteText = (r.note ? esc(r.note) + ' · ' : '') + '🏆' + esc(top.name) + '×' + top.qty;
+    html += '<tr><td class="muted">' + fmtDate(d) + '</td>'
+      + '<td class="r">' + money(r.revenue) + '</td>'
+      + '<td class="r">' + int(r.orders) + '</td>'
+      + '<td class="r muted">' + money(dailyFixed()) + '</td>'
+      + '<td class="r ' + (g >= 0 ? 'pos' : 'neg') + '">' + (g >= 0 ? '+' : '') + money(g) + '</td>'
+      + '<td class="muted">' + noteText + '</td></tr>';
+    tRev += num(r.revenue); tOrd += int(r.orders); tGross += g;
+  }
+  html += '</tbody></table>';
+  $('dpBody').innerHTML = html;
+  $('dpTotal').innerHTML = '<span>共 <b>' + dates.length + '</b> 天</span>'
+    + '<span>营业额 <b>' + money(tRev) + '</b></span>'
+    + '<span>订单 <b>' + tOrd + '</b></span>'
+    + '<span>固定分摊 <b>' + money(dailyFixed() * dates.length) + '</b></span>'
+    + '<span>毛利 <b class="' + (tGross >= 0 ? 'pos' : 'neg') + '">' + (tGross >= 0 ? '+' : '') + money(tGross) + '</b></span>';
+}
+function renderDpExp(){
+  var list = expenses.filter(function(e){ return e.date && dpInMonth(e.date); })
+    .sort(function(a, b){ return a.date < b.date ? 1 : -1; });
+  if(!list.length){
+    $('dpBody').innerHTML = '<div class="dp-empty">🧱 这个范围还没有大额支出</div>';
+    $('dpTotal').innerHTML = '';
+    return;
+  }
+  var html = '<table class="dp"><thead><tr><th>日期</th><th>名称</th><th>分类</th><th class="r">金额</th></tr></thead><tbody>';
+  var t = 0;
+  for(var i = 0; i < list.length; i++){
+    var e = list[i];
+    t += num(e.amount);
+    html += '<tr><td class="muted">' + fmtDateShort(e.date) + '</td>'
+      + '<td>' + esc(e.name) + '</td>'
+      + '<td><span class="cat" style="--c:' + catColor(e.cat) + '">' + esc(e.cat) + '</span></td>'
+      + '<td class="r">' + money(e.amount) + '</td></tr>';
+  }
+  html += '</tbody></table>';
+  $('dpBody').innerHTML = html;
+  $('dpTotal').innerHTML = '<span>共 <b>' + list.length + '</b> 笔</span><span>合计 <b>' + money(t) + '</b></span>';
+}
+function renderDpPkg(){
+  var rows = [], d, id;
+  for(d in pkgSales){
+    if(!dpInMonth(d)) continue;
+    for(id in pkgSales[d]){
+      var q = int(pkgSales[d][id]);
+      if(q > 0) rows.push({ d:d, id:id, q:q });
+    }
+  }
+  rows.sort(function(a, b){ return a.d < b.d ? 1 : -1; });
+  if(!rows.length){
+    $('dpBody').innerHTML = '<div class="dp-empty">🍡 这个范围还没有套餐销量</div>';
+    $('dpTotal').innerHTML = '';
+    return;
+  }
+  var html = '<table class="dp"><thead><tr><th>日期</th><th>套餐</th><th class="r">份数</th><th class="r">单价</th><th class="r">金额</th></tr></thead><tbody>';
+  var tq = 0, ta = 0;
+  for(var i = 0; i < rows.length; i++){
+    var row = rows[i], price = pkgPrice(row.id);
+    tq += row.q; ta += row.q * price;
+    html += '<tr><td class="muted">' + fmtDateShort(row.d) + '</td>'
+      + '<td>' + esc(pkgName(row.id)) + '</td>'
+      + '<td class="r">' + row.q + '</td>'
+      + '<td class="r muted">' + money(price) + '</td>'
+      + '<td class="r">' + money(row.q * price) + '</td></tr>';
+  }
+  html += '</tbody></table>';
+  $('dpBody').innerHTML = html;
+  $('dpTotal').innerHTML = '<span>共 <b>' + tq + '</b> 份</span><span>合计 <b>' + money(ta) + '</b></span>';
+}
+$('dpBack').addEventListener('click', closeDetail);
+$('dpMonth').addEventListener('change', function(){ dpMonthSel = this.value; renderDetail(); });
+(function(){
+  var tabs = document.querySelectorAll('.dp-tab');
+  for(var i = 0; i < tabs.length; i++){
+    tabs[i].addEventListener('click', function(){
+      dpTab = this.getAttribute('data-tab');
+      renderDetail();
+    });
+  }
+})();
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && !$('detailPage').hidden) closeDetail();
+});
+$('goDetailRec').addEventListener('click', function(){ openDetail('rec'); });
+$('goDetailExp').addEventListener('click', function(){ openDetail('exp'); });
+$('goDetailAll').addEventListener('click', function(){ openDetail('rec'); });
 
 /* ---------- 初始化：先画本地缓存，再连云端 ---------- */
 $('fDate').value = todayStr();
