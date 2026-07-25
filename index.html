@@ -342,7 +342,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 
   <div class="grid">
     <section class="card" id="formCard">
-      <h2><span class="dot" style="--c:#FF7BA9"></span>每日记账<span class="more">只扣当天房租水电，算毛利</span></h2>
+      <h2><span class="dot" style="--c:#FF7BA9"></span>每日记账<span class="more">只扣当天固定成本，算毛利</span></h2>
       <form id="entryForm" autocomplete="off">
         <div class="two">
           <label class="field"><span>日期</span>
@@ -359,7 +359,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
           <input type="text" id="fNote" maxlength="30" placeholder="如：周末亲子体验活动，客流不错">
         </label>
         <div class="preview">
-          本日房租水电分摊 <b id="pvFixed">¥0.00</b>，预计毛利 <b id="pvProfit" class="pos">+¥0.00</b><br>
+          本日固定分摊（房租+水电+停车+物业）<b id="pvFixed">¥0.00</b>，预计毛利 <b id="pvProfit" class="pos">+¥0.00</b><br>
           <span style="font-size:12px">装修、补货等大额支出请在下方「大额支出」单独记录，不扣在这里</span>
         </div>
         <button type="submit" class="btn save" id="saveBtn">保存今日经营 →</button>
@@ -439,7 +439,7 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
 <div class="modal-mask" id="settingsModal" hidden>
   <div class="modal">
     <h2><span class="dot" style="--c:#FF7BA9"></span>小店设置</h2>
-    <p class="hint" id="settingsWelcome" hidden>欢迎开张 🎉 先填一下每月房租水电，之后每天记账就会自动算毛利啦～装修和补货在「大额支出」里单独记。</p>
+    <p class="hint" id="settingsWelcome" hidden>欢迎开张 🎉 先填一下每月固定成本（房租、水电、停车、物业），之后每天记账就会自动算毛利啦～装修和补货在「大额支出」里单独记。</p>
     <form id="settingsForm" autocomplete="off">
       <label class="field"><span>店铺名称</span>
         <input type="text" id="sName" maxlength="12" placeholder="豆豆拼豆小铺">
@@ -452,7 +452,15 @@ footer{text-align:center; color:var(--ink-soft); font-size:12.5px; letter-spacin
           <input type="number" id="sUtil" min="0" step="0.01" inputmode="decimal" placeholder="如 800">
         </label>
       </div>
-      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 房租水电分摊（月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）</p>
+      <div class="two">
+        <label class="field"><span>月停车费（元）</span>
+          <input type="number" id="sPark" min="0" step="0.01" inputmode="decimal" placeholder="如 300">
+        </label>
+        <label class="field"><span>月物业费（元）</span>
+          <input type="number" id="sProp" min="0" step="0.01" inputmode="decimal" placeholder="如 500">
+        </label>
+      </div>
+      <p class="hint">计算方式：<br>· 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业，月 ÷ 30 天）<br>· 实际利润 = 累计毛利 − 大额支出合计（装修、补货等）</p>
       <button type="submit" class="btn save">保存设置</button>
     </form>
   </div>
@@ -512,7 +520,7 @@ function catColor(c){
   return '#C0AEA2';
 }
 
-var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, decoration:0, decoMonths:36 };
+var settings = load(LS_SET) || { shopName:'豆豆拼豆小铺', rent:0, utilities:0, parking:0, property:0, decoration:0, decoMonths:36 };
 var records  = load(LS_REC)  || {};
 var expenses = load(LS_EXP)  || [];
 var editing  = null;
@@ -534,8 +542,8 @@ if(num(settings.decoration) > 0){
   save();
 }
 
-function dailyFixed(){ return (num(settings.rent) + num(settings.utilities)) / 30; }
-function gross(r){ return num(r.revenue) - dailyFixed(); }   /* 每日毛利 = 营业额 − 房租水电分摊 */
+function dailyFixed(){ return (num(settings.rent) + num(settings.utilities) + num(settings.parking) + num(settings.property)) / 30; }
+function gross(r){ return num(r.revenue) - dailyFixed(); }   /* 每日毛利 = 营业额 − 固定分摊（房租+水电+停车+物业） */
 
 /* ---------- 汇总 ---------- */
 function aggregate(mk){
@@ -724,7 +732,7 @@ function renderRecords(){
     box.innerHTML = '<div class="empty">🫘 这个月还没有记录<br><small>从上方「每日记账」开始吧～</small></div>';
     return;
   }
-  var html = '<div class="rec-head"><span>日期</span><span>营业额</span><span>订单</span><span>房租分摊</span><span>毛利</span><span>备注</span><span>操作</span></div>';
+  var html = '<div class="rec-head"><span>日期</span><span>营业额</span><span>订单</span><span>固定分摊</span><span>毛利</span><span>备注</span><span>操作</span></div>';
   for(var i = 0; i < dates.length; i++){
     var d = dates[i], r = records[d];
     var p = gross(r);
@@ -886,6 +894,8 @@ function openSettings(){
   $('sName').value = settings.shopName || '';
   $('sRent').value = settings.rent || '';
   $('sUtil').value = settings.utilities || '';
+  $('sPark').value = settings.parking || '';
+  $('sProp').value = settings.property || '';
   $('settingsModal').hidden = false;
 }
 $('settingsBtn').addEventListener('click', function(){
@@ -900,6 +910,8 @@ $('settingsForm').addEventListener('submit', function(e){
   settings.shopName  = $('sName').value.trim() || '豆豆拼豆小铺';
   settings.rent      = num($('sRent').value);
   settings.utilities = num($('sUtil').value);
+  settings.parking   = num($('sPark').value);
+  settings.property  = num($('sProp').value);
   save();
   applyShopName();
   renderAll(); updatePreview();
